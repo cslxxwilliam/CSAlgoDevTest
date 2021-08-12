@@ -43,8 +43,11 @@ public class Order {
         this.qty = qty;
     }
 
-    public void fill(Order matchedSellOrder) {
-        //print sout
+    public Order fill(Order matchedOrder) {
+        if(this.qty<=matchedOrder.qty){
+
+        }
+        return matchedOrder;
     }
 
     public Status getStatus() {
