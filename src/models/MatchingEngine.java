@@ -7,9 +7,8 @@ public class MatchingEngine {
     private HashMap<String, PriorityQueue<Order>> buyOrderBook;
     private HashMap<String, PriorityQueue<Order>> sellOrderBook;
 
-    public void addAndMatch(Order order) {
-
-        if(order.isBuy()){
+    public String addAndMatch(Order order) {
+        if(order.getSide().equals(BuySell.Buy)){
             //ToDo should try match first
             matchBuy(order);
             buyOrderBook.get(order.getSymbol()).add(order);
@@ -17,6 +16,7 @@ public class MatchingEngine {
             sellOrderBook.get(order.getSymbol()).add(order);
         }
 
+        return null;
     }
 
     private void matchBuy(Order newBuyOrder) {

@@ -3,10 +3,7 @@ import models.MatchingEngineApp;
 import models.Order;
 import models.OrderCreator;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
@@ -25,17 +22,13 @@ public class Main {
 
         MatchingEngineApp matchingEngineApp = new MatchingEngineApp();
 
-//        Scanner scanner = new Scanner(System.in);
-
+        Scanner stdin = new Scanner(new BufferedInputStream(System.in));
+        stdin.useDelimiter("\n");
         while(true){
 
-            System.out.println("Please input orders");
-            String line = "";
             String inputOrders = "";
-            while(
-                    (line=reader.readLine())!=null
-                    &&(!line.isEmpty())
-            ) {
+            String line="";
+            while(!(line = stdin.nextLine()).isEmpty()) {
                 inputOrders = inputOrders.concat(line);
             }
             String output = matchingEngineApp.addInput(inputOrders);

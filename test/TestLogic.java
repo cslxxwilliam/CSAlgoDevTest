@@ -17,4 +17,13 @@ public class TestLogic {
 
         assertEquals("Invalid headers", output);
     }
+
+    @Test
+    public void ackOrder() {
+        String invalidInputHeader = "#OrderID,Symbol,Price,Side,OrderQuantity\n" +
+                "Order1,0700.HK,610,Sell,20000";
+        String output = app.addInput(invalidInputHeader);
+
+        assertEquals("Ack,Order1,0700.HK,610,Sell,20000", output);
+    }
 }
