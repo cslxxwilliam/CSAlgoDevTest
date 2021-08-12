@@ -78,7 +78,7 @@ public class Order {
 
         this.status = status.Fill;
         this.filledQty = filledQty + newMatchedQty;
-        this.filledPrice = matchedOrder.getPrice();
+        this.filledPrice = matchedOrder.getOrderType().equals(OrderType.MKT)?this.price:matchedOrder.getPrice();
         return this.toString();
     }
 

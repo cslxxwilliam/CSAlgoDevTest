@@ -36,7 +36,7 @@ public class MatchingEngine {
 
         //match
         if (buyOrderBookPerSymbol != null) {
-            if (buyOrderBookPerSymbol.peek().getPrice() >= newSellOrder.getPrice()) {
+            if (buyOrderBookPerSymbol.peek().getOrderType().equals(OrderType.MKT)||buyOrderBookPerSymbol.peek().getPrice() >= newSellOrder.getPrice()) {
                 Order matchedBuyOrder = buyOrderBookPerSymbol.poll();
 
                 //fill
@@ -73,7 +73,7 @@ public class MatchingEngine {
         //match with existing sell order book
         Order filledSellOrder = null;
         if (sellOrderBookPerSymbol != null) {
-            if (sellOrderBookPerSymbol.peek().getPrice() >= newBuyOrder.getPrice()) {
+            if (sellOrderBookPerSymbol.peek().getOrderType().equals(OrderType.MKT)||sellOrderBookPerSymbol.peek().getPrice() >= newBuyOrder.getPrice()) {
                 Order matchedSellOrder = sellOrderBookPerSymbol.poll();
 
                 //filled
