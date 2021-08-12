@@ -58,7 +58,11 @@ public class MatchingEngine {
 
         @Override
         public int compare(Order c1, Order c2) {
-            return (int) (c1.getPrice() - c2.getPrice());
+            if(c1.getOrderType().compareTo(c2.getOrderType())==0) {
+                return (int) (c1.getPrice() - c2.getPrice());
+            }else{
+                return c1.getOrderType().compareTo(c2.getOrderType());
+            }
         }
     };
 

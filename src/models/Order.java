@@ -2,6 +2,7 @@ package models;
 
 
 public class Order {
+    private OrderType orderType;
     private Status status;
     private String orderId;
     private String symbol;
@@ -11,6 +12,13 @@ public class Order {
     private int filledQty;
     private double filledPrice;
 
+    public OrderType getOrderType() {
+        return orderType;
+    }
+
+    public void setOrderType(OrderType orderType) {
+        this.orderType = orderType;
+    }
 
     public Order(Status status, String orderId, String symbol, double price, BuySell side, int qty) {
         this.status = status;
@@ -19,10 +27,20 @@ public class Order {
         this.symbol = symbol;
         this.price = price;
         this.qty = qty;
+        this.orderType = OrderType.LMT;
     }
 
-    public Order(Status fill, String orderId, String symbol, double price, BuySell side, int qty, int filledQty) {
+    public Order(Status status, String orderId, String symbol, double price, BuySell side, int qty, int filledQty) {
 
+    }
+
+    public Order(Status status, String orderId, String symbol, OrderType orderType, BuySell side, int qty) {
+        this.status = status;
+        this.orderId = orderId;
+        this.symbol = symbol;
+        this.orderType = orderType;
+        this.side = side;
+        this.qty = qty;
     }
 
     public String getSymbol() {
@@ -90,12 +108,14 @@ public class Order {
 
     @Override
     public String toString() {
+        //ToDo better model the print message
         if(status==Status.Ack) {
             return
                     status +
                             "," + orderId +
                             "," + symbol +
-                            "," + formatNum(price) +
+                            "," + printPrice()
+                             +
                             "," + side +
                             "," + qty + "\n"
                     ;
@@ -105,13 +125,21 @@ public class Order {
                 status +
                         "," + orderId +
                         "," + symbol +
-                        "," + formatNum(price) +
+                        "," + printPrice()+
                         "," + side +
                         "," + qty +
                         "," + formatNum(filledPrice) +
                         "," + filledQty +
                         "\n"
                 ;
+    }
+
+    private String printPrice() {
+        if(orderType.equals(OrderType.LMT)){
+            return formatNum(price);
+        }
+
+        return orderType.toString();
     }
 
     private String formatNum(double price) {

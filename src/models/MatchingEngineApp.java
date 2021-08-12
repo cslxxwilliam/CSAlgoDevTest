@@ -23,7 +23,14 @@ public class MatchingEngineApp {
         //validate orders
         for(int i =1;i<split.length; i++){
             String[] orderDetails = split[i].split(",");
-            Order order = new Order(Status.Ack, orderDetails[0], orderDetails[1], Double.parseDouble(orderDetails[2]), BuySell.valueOf(orderDetails[3]), Integer.parseInt(orderDetails[4]));
+
+            Order order=null;
+            if(orderDetails[2].equals("MKT")){
+                order= new Order(Status.Ack, orderDetails[0], orderDetails[1], OrderType.MKT, BuySell.valueOf(orderDetails[3]), Integer.parseInt(orderDetails[4]));
+
+            }else {
+                order = new Order(Status.Ack, orderDetails[0], orderDetails[1], Double.parseDouble(orderDetails[2]), BuySell.valueOf(orderDetails[3]), Integer.parseInt(orderDetails[4]));
+            }
 
             orderList.add(order);
             output = output + order.toString();
