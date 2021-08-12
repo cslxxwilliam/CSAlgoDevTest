@@ -9,7 +9,6 @@ public class Order {
     private BuySell side;
     private int qty;
 
-//                "Order1,0700.HK,610,Sell,20000"
 
     public Order(Status status, String orderId, String symbol, double price, BuySell side, int qty) {
         this.status = status;
@@ -78,9 +77,16 @@ public class Order {
                 status +
                 "," + orderId  +
                 "," + symbol +
-                "," + price +
+                "," + formatNum(price) +
                 "," + side +
-                "," + qty
+                "," + qty+"\n"
                 ;
+    }
+
+    private String formatNum(double price) {
+        if(price == (long) price)
+            return String.format("%d",(long)price);
+        else
+            return String.format("%s",price);
     }
 }

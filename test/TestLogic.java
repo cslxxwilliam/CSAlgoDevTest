@@ -20,10 +20,16 @@ public class TestLogic {
 
     @Test
     public void ackOrder() {
-        String invalidInputHeader = "#OrderID,Symbol,Price,Side,OrderQuantity\n" +
-                "Order1,0700.HK,610,Sell,20000";
-        String output = app.addInput(invalidInputHeader);
+        String validInput = "#OrderID,Symbol,Price,Side,OrderQuantity\n" +
+                "Order1,0700.HK,610,Sell,20000\nOrder2,0700.HK,610,Sell,10000\n" +
+                "Order3,0700.HK,610,Buy,10000\n\n";
+        String output = app.addInput(validInput);
 
-        assertEquals("Ack,Order1,0700.HK,610,Sell,20000", output);
+        assertEquals("#ActionType,OrderID,Symbol,Price,Side,OrderQuantity,FillPrice,FillQuantity\n" +
+                "Ack,Order1,0700.HK,610,Sell,20000\n" +
+                "Ack,Order2,0700.HK,610,Sell,10000\n" +
+                "Ack,Order3,0700.HK,610,Buy,10000\n"+
+                "Fill,Order1,0700.HK,610,Sell,20000,610,10000\n" +
+                "Fill,Order3,0700.HK,610,Buy,10000,610,10000", output);
     }
 }
