@@ -1,5 +1,6 @@
 package models;
 
 public enum Status {
-    Ack
+    Ack, Fill
+
 }

@@ -8,6 +8,8 @@ public class Order {
     private double price;
     private BuySell side;
     private int qty;
+    private int filledQty;
+    private double filledPrice;
 
 
     public Order(Status status, String orderId, String symbol, double price, BuySell side, int qty) {
@@ -17,6 +19,10 @@ public class Order {
         this.symbol = symbol;
         this.price = price;
         this.qty = qty;
+    }
+
+    public Order(Status fill, String orderId, String symbol, double price, BuySell side, int qty, int filledQty) {
+
     }
 
     public String getSymbol() {
@@ -43,11 +49,19 @@ public class Order {
         this.qty = qty;
     }
 
-    public Order fill(Order matchedOrder) {
-        if(this.qty<=matchedOrder.qty){
+    public String fill(Order matchedOrder) {
+            int newMatchedQty;
 
+        if(this.qty<=matchedOrder.qty){
+            newMatchedQty = this.qty;
+        }else {
+            newMatchedQty = matchedOrder.qty;
         }
-        return matchedOrder;
+
+        this.status = status.Fill;
+        this.filledQty = filledQty + newMatchedQty;
+        this.filledPrice = matchedOrder.getPrice();
+        return this.toString();
     }
 
     public Status getStatus() {
@@ -76,13 +90,27 @@ public class Order {
 
     @Override
     public String toString() {
+        if(status==Status.Ack) {
+            return
+                    status +
+                            "," + orderId +
+                            "," + symbol +
+                            "," + formatNum(price) +
+                            "," + side +
+                            "," + qty + "\n"
+                    ;
+        }
+
         return
                 status +
-                "," + orderId  +
-                "," + symbol +
-                "," + formatNum(price) +
-                "," + side +
-                "," + qty+"\n"
+                        "," + orderId +
+                        "," + symbol +
+                        "," + formatNum(price) +
+                        "," + side +
+                        "," + qty +
+                        "," + formatNum(filledPrice) +
+                        "," + filledQty +
+                        "\n"
                 ;
     }
 

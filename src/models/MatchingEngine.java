@@ -32,34 +32,26 @@ public class MatchingEngine {
 
     private String matchSell(Order newSellOrder) {
         PriorityQueue<Order> buyOrderBookPerSymbol = buyOrderBook.get(newSellOrder.getSymbol());
+        String output="";
 
         //match
         if (buyOrderBookPerSymbol != null) {
             if (buyOrderBookPerSymbol.peek().getPrice() >= newSellOrder.getPrice()) {
                 Order matchedBuyOrder = buyOrderBookPerSymbol.poll();
 
-//
-//                //filled
-//                Order filledBuyOrder = newBuyOrder.fill(matchedSellOrder);
-//                Order filledSellOrder = matchedSellOrder.fill(newBuyOrder);
-//
-//                //add filled ones back to order book
-//                tryAddToOrderBook(filledBuyOrder, buyOrderBook);
-//
-//                sellOrderBookPerSymbol.add(filledSellOrder);
-//
-                Order filledSellOrder=newSellOrder.fill(matchedBuyOrder);
-                Order filledBuyOrder = matchedBuyOrder.fill(newSellOrder);
+                //fill
+                output  = output + matchedBuyOrder.fill(newSellOrder);
+                output  = output + newSellOrder.fill(matchedBuyOrder);
 
-                tryAddToOrderBook(filledSellOrder, sellOrderBook);
+                tryAddToOrderBook(matchedBuyOrder, sellOrderBook);
 
-                buyOrderBookPerSymbol.add(matchedBuyOrder);
+//                buyOrderBookPerSymbol.add(filledBuyOrder);
             }
         }
 
         tryAddToOrderBook(newSellOrder, sellOrderBook);
 
-        return null;
+        return output;
     }
 
     public static Comparator<Order> orderComparator = new Comparator<Order>() {
@@ -72,26 +64,29 @@ public class MatchingEngine {
 
     private String matchBuy(Order newBuyOrder) {
         PriorityQueue<Order> sellOrderBookPerSymbol = sellOrderBook.get(newBuyOrder.getSymbol());
+        String output="";
 
         //match with existing sell order book
+        Order filledSellOrder = null;
         if (sellOrderBookPerSymbol != null) {
             if (sellOrderBookPerSymbol.peek().getPrice() >= newBuyOrder.getPrice()) {
                 Order matchedSellOrder = sellOrderBookPerSymbol.poll();
 
                 //filled
-                Order filledBuyOrder = newBuyOrder.fill(matchedSellOrder);
-                Order filledSellOrder = matchedSellOrder.fill(newBuyOrder);
+                output = output+matchedSellOrder.fill(newBuyOrder);
+                output = output+ newBuyOrder.fill(matchedSellOrder);
 
                 //add filled ones back to order book
-                tryAddToOrderBook(filledBuyOrder, buyOrderBook);
+                tryAddToOrderBook(matchedSellOrder, buyOrderBook);
 
-                sellOrderBookPerSymbol.add(filledSellOrder);
+//                sellOrderBookPerSymbol.add(filledSellOrder);
             }
         }
 
         //add the new order to order book, either filled or not
         tryAddToOrderBook(newBuyOrder, buyOrderBook);
-        return null;
+
+        return output;
     }
 
     private void tryAddToOrderBook(Order orderToAdd, HashMap<String, PriorityQueue<Order>> buyOrderBook) {

@@ -30,6 +30,6 @@ public class TestLogic {
                 "Ack,Order2,0700.HK,610,Sell,10000\n" +
                 "Ack,Order3,0700.HK,610,Buy,10000\n"+
                 "Fill,Order1,0700.HK,610,Sell,20000,610,10000\n" +
-                "Fill,Order3,0700.HK,610,Buy,10000,610,10000", output);
+                "Fill,Order3,0700.HK,610,Buy,10000,610,10000\n", output);
     }
 }
