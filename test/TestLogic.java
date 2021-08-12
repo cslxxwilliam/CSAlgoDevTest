@@ -48,4 +48,32 @@ public class TestLogic {
                 "Fill,Order2,0700.HK,MKT,Sell,10000,610,10000\n" +
                 "Fill,Order3,0700.HK,610,Buy,10000,610,10000\n", output);
     }
+
+    @Test
+    public void qtyValidation() {
+        String validInput = "#OrderID,Symbol,Price,Side,OrderQuantity\n" +
+                "Order1,0700.HK,610,Sell,10000\n" +
+                "Order2,0700.HK,610,Buy,10000000\n\n";
+        String output = app.addInput(validInput);
+
+        assertEquals("#ActionType,OrderID,Symbol,Price,Side,OrderQuantity,FillPrice,FillQuantity\n" +
+                "Ack,Order1,0700.HK,610,Sell,10000\n" +
+                "Reject,Order2,0700.HK,610,Buy,10000000\n", output);
+    }
+
+    @Test
+    public void matchMultipleSymbol() {
+        String validInput = "#OrderID,Symbol,Price,Side,OrderQuantity\n" +
+                "Order1,0700.HK,610,Sell,10000\n" +
+                "Order2,0005.HK,49.8,Sell,10000\n" +
+                "Order3,0005.HK,49.8,Buy,10000\n\n";
+        String output = app.addInput(validInput);
+
+        assertEquals("#ActionType,OrderID,Symbol,Price,Side,OrderQuantity,FillPrice,FillQuantity\n" +
+                "Ack,Order1,0700.HK,610,Sell,10000\n" +
+                "Ack,Order2,0005.HK,49.8,Sell,10000\n" +
+                "Ack,Order3,0005.HK,49.8,Buy,10000\n" +
+                "Fill,Order2,0005.HK,49.8,Sell,10000,49.8,10000\n" +
+                "Fill,Order3,0005.HK,49.8,Buy,10000,49.8,10000\n", output);
+    }
 }

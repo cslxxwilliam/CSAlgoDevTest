@@ -1,6 +1,6 @@
 package models;
 
 public enum Status {
-    Ack, Fill
+    Ack, Fill,Reject;
 
 }

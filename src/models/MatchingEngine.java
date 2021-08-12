@@ -1,30 +1,32 @@
 package models;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.PriorityQueue;
+import java.util.*;
 
 public class MatchingEngine {
     private HashMap<String, PriorityQueue<Order>> buyOrderBook;
     private HashMap<String, PriorityQueue<Order>> sellOrderBook;
+    private List<Order> rejectedOrders;
 
     public MatchingEngine() {
         buyOrderBook = new HashMap<>();
         sellOrderBook = new HashMap<>();
+        rejectedOrders = new ArrayList<>();
     }
 
     public String addAndMatch(List<Order> orderList) {
         String output = "";
         for (Order order : orderList) {
-            if (order.getSide().equals(BuySell.Buy)) {
-                //ToDo should try match first
-                output = output + matchBuy(order);
-            } else {
+            if(order.getStatus().equals(Status.Reject)){
+                rejectedOrders.add(order);
+            }else {
+                if (order.getSide().equals(BuySell.Buy)) {
+                    //ToDo should try match first
+                    output = output + matchBuy(order);
+                } else {
 
-                output = output + matchSell(order);
+                    output = output + matchSell(order);
+                }
             }
-
         }
 
         return output;

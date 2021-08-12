@@ -109,7 +109,7 @@ public class Order {
     @Override
     public String toString() {
         //ToDo better model the print message
-        if(status==Status.Ack) {
+        if(status==Status.Ack||status==Status.Reject) {
             return
                     status +
                             "," + orderId +
