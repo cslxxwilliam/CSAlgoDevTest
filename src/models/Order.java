@@ -75,35 +75,17 @@ public class Order {
         this.qty = qty;
     }
 
-    public String fill(Order matchedOrder) {
-            int newMatchedQty;
-
-        if(this.qty<=matchedOrder.qty){
-            newMatchedQty = this.qty;
-        }else {
-            newMatchedQty = matchedOrder.qty;
-        }
-
+    public ExecutionReport fill(int fillQty, double fillPrice, int fillSeq) {
         this.status = Status.Fill;
-        this.filledQty = filledQty + newMatchedQty;
+        this.filledQty = filledQty + fillQty;
         this.unFilledQty = qty - filledQty;
 
-        double filledPrice = matchedOrder.getOrderType().equals(OrderType.MKT) ? this.price : matchedOrder.getPrice();
-        Fill fill = new Fill(filledPrice, newMatchedQty);
+        Fill fill = new Fill(fillPrice, fillQty, fillSeq);
 
         this.fillList.add(fill);
-        return this.toString()+","+fill.toString()+"\n";
-    }
 
-    public String fill(int toFill, double fillPrice) {
-        this.status = Status.Fill;
-        this.filledQty = filledQty + toFill;
-        this.unFilledQty = qty - filledQty;
-
-        Fill fill = new Fill(fillPrice, toFill);
-
-        this.fillList.add(fill);
-        return this.toString()+","+fill.toString()+"\n";
+        //ToDo refactor to diff reports type
+        return new ExecutionReport(ReportType.Fill, this, fill, this.toString()+","+fill.toString()+"\n");
     }
 
     public Status getStatus() {

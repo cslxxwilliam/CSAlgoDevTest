@@ -18,21 +18,21 @@ public class MatchingEngine {
         rejectedOrders = new ArrayList<>();
     }
 
-    public String addAndMatch(List<Order> orderList) {
-        String output = "";
+    public List<ExecutionReport> addAndMatch(List<Order> orderList) {
+        List<ExecutionReport> reports = new ArrayList<>();
         for (Order order : orderList) {
             if (order.getStatus().equals(Status.Reject)) {
                 rejectedOrders.add(order);
             } else {
-                output = output + matchAll(order);
+              reports = matchAll(order);
             }
         }
 
-        return output;
+        return reports;
     }
 
 
-    private String matchAll(Order newNewBuyOrder) {
+    private List<ExecutionReport> matchAll(Order newNewBuyOrder) {
         if (newNewBuyOrder.getSide().equals(Buy)) {
             tryAddToOrderBook(newNewBuyOrder, buyOrderBook);
         } else {
@@ -42,14 +42,13 @@ public class MatchingEngine {
         PriorityQueue<Order> buyOrderBookPerSymbol = buyOrderBook.get(newNewBuyOrder.getSymbol());
         PriorityQueue<Order> sellOrderBookPerSymbol = sellOrderBook.get(newNewBuyOrder.getSymbol());
 
-        String output = "";
+        List<ExecutionReport> executionReports = new ArrayList<>();
         //match with existing sell order book
         while (hasMatch(buyOrderBookPerSymbol, sellOrderBookPerSymbol)) {
-            output = output + match(buyOrderBookPerSymbol, sellOrderBookPerSymbol);
+            executionReports.addAll(match(buyOrderBookPerSymbol, sellOrderBookPerSymbol));
         }
 
-
-        return output;
+        return executionReports;
     }
 
     public static Comparator<Order> buyOrderComparator = (c1, c2) -> {
@@ -75,12 +74,13 @@ public class MatchingEngine {
     };
 
 
-    private String match(PriorityQueue<Order> buyOrderBookPerSymbol, PriorityQueue<Order> sellOrderBookPerSymbol) {
+    private List<ExecutionReport> match(PriorityQueue<Order> buyOrderBookPerSymbol, PriorityQueue<Order> sellOrderBookPerSymbol) {
         Order sell = sellOrderBookPerSymbol.poll();
         Order buy = buyOrderBookPerSymbol.poll();
 
         //filled
         double latestPrice;
+        List<ExecutionReport> executionReports = new ArrayList<>();
 
         if (buy.getOrderType().equals(MKT) && sell.getOrderType().equals(MKT)) {
             latestPrice = findLatestPriceInOrderBooks(sellOrderBookPerSymbol, buyOrderBookPerSymbol);
@@ -95,8 +95,9 @@ public class MatchingEngine {
         }
 
         int fillQty = calculateFillQty(buy, sell);
-        String output = sell.fill(fillQty, latestPrice);
-        output = output + buy.fill(fillQty, latestPrice);
+
+        //ToDo refactor
+        executionReports.addAll(fill(buy,sell,fillQty, latestPrice));
 
         if (!sell.isFullyFilled()) {
             sellOrderBookPerSymbol.add(sell);
@@ -105,7 +106,18 @@ public class MatchingEngine {
         if (!buy.isFullyFilled()) {
             buyOrderBookPerSymbol.add(buy);
         }
-        return output;
+        return executionReports;
+    }
+
+    private List<ExecutionReport> fill(Order buy, Order sell, int fillQty, double latestPrice) {
+        List<ExecutionReport> reports=new ArrayList<>();
+        int fillSeq = Fill.nextSeq();
+
+
+        reports.add(sell.fill(fillQty, latestPrice, fillSeq));
+        reports.add(buy.fill(fillQty, latestPrice, fillSeq));
+
+        return reports;
     }
 
     private double findLatestPriceBySeq(Order buy, Order sell) {

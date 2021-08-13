@@ -1,7 +1,10 @@
 package models;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+
+import static models.ReportType.Ack;
 
 public class MatchingEngineApp {
     public MatchingEngine engine;
@@ -13,14 +16,13 @@ public class MatchingEngineApp {
 
     public String addInput(String input) {
         String[] split = input.split("\n");
-        String output = "";
+        List<ExecutionReport> executionReports = new ArrayList<>();
         List<Order> orderList = new ArrayList<>();
         if (!split[0].equals("#OrderID,Symbol,Price,Side,OrderQuantity")) {
             return "Invalid headers";
         } else {
-            output = output + "#ActionType,OrderID,Symbol,Price,Side,OrderQuantity,FillPrice,FillQuantity\n";
+            executionReports.add(new ExecutionReport(ReportType.Header, null, null, "#ActionType,OrderID,Symbol,Price,Side,OrderQuantity,FillPrice,FillQuantity\n"));
         }
-
 
         //validate orders
         for (int i = 1; i < split.length; i++) {
@@ -40,12 +42,22 @@ public class MatchingEngineApp {
                 order = buildOrder(seq++, orderDetails, status, orderId, symbol, side, qty);
             }
             orderList.add(order);
-            output = output + order.toString()+"\n";
+            executionReports.add(new ExecutionReport(Ack, order, null, order.toString()+"\n"));
         }
 
         //add to orderbook
-        output = output + engine.addAndMatch(orderList);
+        executionReports.addAll(engine.addAndMatch(orderList));
 
+        return printReport(executionReports);
+    }
+
+    private String printReport(List<ExecutionReport> executionReports) {
+        executionReports.sort(reportComparator);
+
+        String output ="";
+        for (ExecutionReport report : executionReports) {
+            output = output + report.getReport();
+        }
         return output;
     }
 
@@ -59,4 +71,24 @@ public class MatchingEngineApp {
         }
         return order;
     }
+
+
+    //refator for a better comparator
+    public static Comparator<ExecutionReport> reportComparator = (r1, r2) -> {
+        //price larger, the less
+        if (r1.getType().compareTo(r2.getType()) == 0) {
+            if(r1.getFill()==null||r2.getFill()==null) {
+                return r1.getOrder().getSeq() - r2.getOrder().getSeq();
+            }
+
+            if(r1.getFill().getSeq()==r2.getFill().getSeq()){
+                return r1.getOrder().getSeq() - r2.getOrder().getSeq();
+            }
+            return r1.getFill().getSeq() - r2.getFill().getSeq();
+        }
+        //market order less than limit
+        else {
+            return r1.getType().compareTo(r2.getType());
+        }
+    };
 }
