@@ -34,6 +34,8 @@ public class Order {
         this.price = price;
         this.qty = qty;
         this.orderType = OrderType.LMT;
+        this.filledQty =0;
+        this.unFilledQty = qty;
     }
 
     public Order(Status status, String orderId, String symbol, double price, BuySell side, int qty, int filledQty) {
@@ -47,6 +49,8 @@ public class Order {
         this.orderType = orderType;
         this.side = side;
         this.qty = qty;
+        this.filledQty =0;
+        this.unFilledQty = qty;
     }
 
     public String getSymbol() {
@@ -93,20 +97,12 @@ public class Order {
         return this.toString()+fill.toString()+"\n";
     }
 
-    public String fill(Order toFill, double fillPrice) {
-        int newMatchedQty;
-
-        if((this.qty-filledQty)<=toFill.getUnFilledQty()){
-            newMatchedQty = this.qty;
-        }else {
-            newMatchedQty = toFill.qty;
-        }
-
+    public String fill(int toFill, double fillPrice) {
         this.status = Status.Fill;
-        this.filledQty = filledQty + newMatchedQty;
+        this.filledQty = filledQty + toFill;
         this.unFilledQty = qty - filledQty;
 
-        Fill fill = new Fill(fillPrice, newMatchedQty);
+        Fill fill = new Fill(fillPrice, toFill);
 
         this.fillList.add(fill);
         return this.toString()+","+fill.toString()+"\n";
@@ -191,5 +187,9 @@ public class Order {
 
     public void setUnFilledQty(int unFilledQty) {
         this.unFilledQty = unFilledQty;
+    }
+
+    public boolean isFullyFilled() {
+        return filledQty>=qty;
     }
 }

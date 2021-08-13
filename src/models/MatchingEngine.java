@@ -2,6 +2,8 @@ package models;
 
 import java.util.*;
 
+import static java.lang.Math.min;
+
 public class MatchingEngine {
     private HashMap<String, PriorityQueue<Order>> buyOrderBook;
     private HashMap<String, PriorityQueue<Order>> sellOrderBook;
@@ -76,10 +78,9 @@ public class MatchingEngine {
         Order peekTopBuyOrder = findTopBuyOrder(buyOrderBookPerSymbol);
 
         //match with existing sell order book
-        Order filledSellOrder = null;
+        Order topBuyOrder;
         if (sellOrderBookPerSymbol != null) {
 
-            Order topBuyOrder;
             while (hasMatch(peekTopBuyOrder, buyOrderBookPerSymbol, sellOrderBookPerSymbol)) {
                 topBuyOrder = buyOrderBookPerSymbol.poll();
                 output=output+match(buyOrderBookPerSymbol, sellOrderBookPerSymbol, topBuyOrder);
@@ -146,15 +147,42 @@ public class MatchingEngine {
         if (topBuyOrder.getOrderType().equals(OrderType.MKT) && matchedSellOrder.getOrderType().equals(OrderType.MKT)) {
             latestPrice = findLatestPrice(sellOrderBookPerSymbol, buyOrderBookPerSymbol);
         } else {
-            latestPrice = matchedSellOrder.getPrice();
+            if(topBuyOrder.getOrderType().equals(OrderType.MKT)){
+                latestPrice = matchedSellOrder.getPrice();
+            }else{
+                latestPrice = topBuyOrder.getPrice();
+            }
         }
-        String output = matchedSellOrder.fill(topBuyOrder, latestPrice);
-        output = output + topBuyOrder.fill(matchedSellOrder, latestPrice);
 
+        int fillQty = calculateFillQty(topBuyOrder, matchedSellOrder);
+        String output = matchedSellOrder.fill(fillQty, latestPrice);
+        output = output + topBuyOrder.fill(fillQty, latestPrice);
+
+        if(!matchedSellOrder.isFullyFilled()){
+            sellOrderBookPerSymbol.add(matchedSellOrder);
+        }
+
+        if(!topBuyOrder.isFullyFilled()){
+            buyOrderBookPerSymbol.add(topBuyOrder);
+        }
         return output;
     }
 
+    private int calculateFillQty(Order buy, Order sell) {
+//        if((buy.unFilledQty)<=toFill.getUnFilledQty()){
+//            newMatchedQty = this.unFilledQty;
+//        }else {
+//            newMatchedQty = toFill.getUnFilledQty();
+//        }
+
+        return min(buy.getUnFilledQty(), sell.getUnFilledQty());
+    }
+
     private boolean hasMatch(Order topBuyOrder, PriorityQueue<Order> buyOrderBookPerSymbol, PriorityQueue<Order> sellOrderBookPerSymbol) {
+        if(topBuyOrder==null){
+            return false;
+        }
+
         //if new order LMT order
         //if matching order is MKT order
         // if matching order is LMT order and price < buy order
@@ -165,6 +193,7 @@ public class MatchingEngine {
         if (peekSellOrder == null) {
             return false;
         }
+
         if (!topBuyOrder.getOrderType().equals(OrderType.MKT)) {
             return peekSellOrder.getOrderType().equals(OrderType.MKT) || peekSellOrder.getPrice() <= topBuyOrder.getPrice();
         } else {
