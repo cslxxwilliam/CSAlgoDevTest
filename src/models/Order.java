@@ -92,7 +92,7 @@ public class Order {
         Fill fill = new Fill(filledPrice, newMatchedQty);
 
         this.fillList.add(fill);
-        return this.toString()+fill.toString()+"\n";
+        return this.toString()+","+fill.toString()+"\n";
     }
 
     public String fill(int toFill, double fillPrice) {

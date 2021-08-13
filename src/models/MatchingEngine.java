@@ -3,6 +3,8 @@ package models;
 import java.util.*;
 
 import static java.lang.Math.min;
+import static models.OrderType.LMT;
+import static models.OrderType.MKT;
 
 public class MatchingEngine {
     private HashMap<String, PriorityQueue<Order>> buyOrderBook;
@@ -34,37 +36,55 @@ public class MatchingEngine {
         return output;
     }
 
+    //    private String matchBuy(Order newNewBuyOrder) {
+//        //add the new order to order book, either filled or not
+//        tryAddToOrderBook(newNewBuyOrder, buyOrderBook);
+//
+//        PriorityQueue<Order> sellOrderBookPerSymbol = sellOrderBook.get(newNewBuyOrder.getSymbol());
+//        String output = "";
+//
+//        PriorityQueue<Order> buyOrderBookPerSymbol = buyOrderBook.get(newNewBuyOrder.getSymbol());
+//
+//        Order peekTopBuyOrder = findTopBuyOrder(buyOrderBookPerSymbol);
+//
+//        //match with existing sell order book
+//        Order topBuyOrder;
+//        if (sellOrderBookPerSymbol != null) {
+//
+//            while (hasMatch(peekTopBuyOrder, buyOrderBookPerSymbol, sellOrderBookPerSymbol)) {
+//                topBuyOrder = buyOrderBookPerSymbol.poll();
+//                output=output+match(buyOrderBookPerSymbol, sellOrderBookPerSymbol, topBuyOrder);
+//                peekTopBuyOrder = findTopBuyOrder(buyOrderBookPerSymbol);
+//            }
+//
+//        }
+//
+//
+//        return output;
+//    }
     private String matchSell(Order newSellOrder) {
         tryAddToOrderBook(newSellOrder, sellOrderBook);
 
         PriorityQueue<Order> buyOrderBookPerSymbol = buyOrderBook.get(newSellOrder.getSymbol());
         String output = "";
 
+        PriorityQueue<Order> sellOrderBookPerSymbol = buyOrderBook.get(newSellOrder.getSymbol());
+
         //match
-        if (buyOrderBookPerSymbol != null) {
-            if (buyOrderBookPerSymbol.peek().getOrderType().equals(OrderType.MKT) || buyOrderBookPerSymbol.peek().getPrice() >= newSellOrder.getPrice()) {
-                Order matchedBuyOrder = buyOrderBookPerSymbol.poll();
-
-                //fill
-                output = output + matchedBuyOrder.fill(newSellOrder);
-                output = output + newSellOrder.fill(matchedBuyOrder);
-
-                tryAddToOrderBook(matchedBuyOrder, sellOrderBook);
-
+        if (sellOrderBookPerSymbol != null) {
+            while (hasMatch(buyOrderBookPerSymbol, sellOrderBookPerSymbol)) {
+                output = output + match(buyOrderBookPerSymbol, sellOrderBookPerSymbol);
             }
-        }
 
+        }
         return output;
     }
 
-    private void tryAddToSellOrderBook(Order sellOrder, HashMap<String, PriorityQueue<Order>> orderBook) {
-
-    }
 
     public static Comparator<Order> buyOrderComparator = (c1, c2) -> {
         //price larger, the less
         if (c1.getOrderType().compareTo(c2.getOrderType()) == 0) {
-            return (int) - (c1.getPrice() - c2.getPrice());
+            return (int) -(c1.getPrice() - c2.getPrice());
         }
         //market order less than limit
         else {
@@ -93,59 +113,50 @@ public class MatchingEngine {
 
         PriorityQueue<Order> buyOrderBookPerSymbol = buyOrderBook.get(newNewBuyOrder.getSymbol());
 
-        Order peekTopBuyOrder = findTopBuyOrder(buyOrderBookPerSymbol);
-
         //match with existing sell order book
-        Order topBuyOrder;
-        if (sellOrderBookPerSymbol != null) {
-
-            while (hasMatch(peekTopBuyOrder, buyOrderBookPerSymbol, sellOrderBookPerSymbol)) {
-                topBuyOrder = buyOrderBookPerSymbol.poll();
-                output=output+match(buyOrderBookPerSymbol, sellOrderBookPerSymbol, topBuyOrder);
-                peekTopBuyOrder = findTopBuyOrder(buyOrderBookPerSymbol);
-            }
-
+        while (hasMatch(buyOrderBookPerSymbol, sellOrderBookPerSymbol)) {
+            output = output + match(buyOrderBookPerSymbol, sellOrderBookPerSymbol);
         }
 
 
         return output;
     }
 
-    private String match(PriorityQueue<Order> buyOrderBookPerSymbol, PriorityQueue<Order> sellOrderBookPerSymbol, Order topBuyOrder) {
-        Order matchedSellOrder = sellOrderBookPerSymbol.poll();
+    private String match(PriorityQueue<Order> buyOrderBookPerSymbol, PriorityQueue<Order> sellOrderBookPerSymbol) {
+        Order sell = sellOrderBookPerSymbol.poll();
+        Order buy = buyOrderBookPerSymbol.poll();
 
         //filled
         double latestPrice;
 
-        if (topBuyOrder.getOrderType().equals(OrderType.MKT) && matchedSellOrder.getOrderType().equals(OrderType.MKT)) {
+        if (buy.getOrderType().equals(MKT) && sell.getOrderType().equals(MKT)) {
             latestPrice = findLatestPriceInOrderBooks(sellOrderBookPerSymbol, buyOrderBookPerSymbol);
         } else {
-            if(topBuyOrder.getOrderType().equals(OrderType.MKT)){
-                latestPrice = matchedSellOrder.getPrice();
-            } else if(matchedSellOrder.getOrderType().equals(OrderType.MKT)){
-                latestPrice = topBuyOrder.getPrice();
-            }
-            else{
-                latestPrice = findLatestPriceBySeq(topBuyOrder, matchedSellOrder);
+            if (buy.getOrderType().equals(LMT)&&sell.getOrderType().equals(MKT)) {
+                latestPrice = buy.getPrice();
+            } else if (buy.getOrderType().equals(MKT)&&sell.getOrderType().equals(LMT)) {
+                latestPrice = sell.getPrice();
+            } else {
+                latestPrice = findLatestPriceBySeq(buy, sell);
             }
         }
 
-        int fillQty = calculateFillQty(topBuyOrder, matchedSellOrder);
-        String output = matchedSellOrder.fill(fillQty, latestPrice);
-        output = output + topBuyOrder.fill(fillQty, latestPrice);
+        int fillQty = calculateFillQty(buy, sell);
+        String output = sell.fill(fillQty, latestPrice);
+        output = output + buy.fill(fillQty, latestPrice);
 
-        if(!matchedSellOrder.isFullyFilled()){
-            sellOrderBookPerSymbol.add(matchedSellOrder);
+        if (!sell.isFullyFilled()) {
+            sellOrderBookPerSymbol.add(sell);
         }
 
-        if(!topBuyOrder.isFullyFilled()){
-            buyOrderBookPerSymbol.add(topBuyOrder);
+        if (!buy.isFullyFilled()) {
+            buyOrderBookPerSymbol.add(buy);
         }
         return output;
     }
 
     private double findLatestPriceBySeq(Order buy, Order sell) {
-        if(buy.getSeq()<sell.getSeq()){
+        if (buy.getSeq() < sell.getSeq()) {
             return buy.getPrice();
         }
 
@@ -157,42 +168,42 @@ public class MatchingEngine {
         return min(buy.getUnFilledQty(), sell.getUnFilledQty());
     }
 
-    private boolean hasMatch(Order topBuyOrder, PriorityQueue<Order> buyOrderBookPerSymbol, PriorityQueue<Order> sellOrderBookPerSymbol) {
-        if(topBuyOrder==null){
+    //for both buy and sell
+    private boolean hasMatch(PriorityQueue<Order> buyOrderBookPerSymbol, PriorityQueue<Order> sellOrderBookPerSymbol) {
+        if(buyOrderBookPerSymbol==null||sellOrderBookPerSymbol==null){
             return false;
         }
 
+        Order buyOrder = buyOrderBookPerSymbol.peek();
+        if (buyOrder == null) {
+            return false;
+        }
+
+        Order sellOrder = sellOrderBookPerSymbol.peek();
+        if (sellOrder == null) {
+            return false;
+        }
         //if new order LMT order
         //if matching order is MKT order
         // if matching order is LMT order and price < buy order
         //if new order MKT
 
-
-        Order peekSellOrder = sellOrderBookPerSymbol.peek();
-        if (peekSellOrder == null) {
-            return false;
+        if (buyOrder.getOrderType().equals(LMT) || sellOrder.getOrderType().equals(LMT)) {
+            return buyOrder.getPrice() >= sellOrder.getPrice();
         }
 
-        if (!topBuyOrder.getOrderType().equals(OrderType.MKT)) {
-            return peekSellOrder.getOrderType().equals(OrderType.MKT) || peekSellOrder.getPrice() <= topBuyOrder.getPrice();
-        } else {
-            if (peekSellOrder.getOrderType().equals(OrderType.MKT)) {
-                return orderBookHasLimitOrderPerSymbol(topBuyOrder.getSymbol());
-            } else {
-                return peekSellOrder.getPrice() >= topBuyOrder.getPrice();
-            }
-        }
+        return orderBookHasLimitOrderPerSymbol(buyOrder.getSymbol());
     }
 
-    private Order findTopBuyOrder(PriorityQueue<Order> buyOrderBookPerSymbol) {
+    private Order findTopOrder(PriorityQueue<Order> buyOrderBookPerSymbol) {
         return buyOrderBookPerSymbol.peek();
     }
 
     //find the top Limit order price in both buy and sell order books
     //if same price, compare sequence
     private double findLatestPriceInOrderBooks(PriorityQueue<Order> sellOrderBookPerSymbol, PriorityQueue<Order> buyOrderBookPerSymbol) {
-        Optional<Order> firstInSellOrderBook = sellOrderBookPerSymbol.stream().filter(o -> o.getOrderType().equals(OrderType.LMT)).findFirst();
-        Optional<Order> firstInBuyOrderBook = buyOrderBookPerSymbol.stream().filter(o -> o.getOrderType().equals(OrderType.LMT)).findFirst();
+        Optional<Order> firstInSellOrderBook = sellOrderBookPerSymbol.stream().filter(o -> o.getOrderType().equals(LMT)).findFirst();
+        Optional<Order> firstInBuyOrderBook = buyOrderBookPerSymbol.stream().filter(o -> o.getOrderType().equals(LMT)).findFirst();
 
         if (firstInBuyOrderBook.isEmpty() && firstInSellOrderBook.isEmpty()) {
             return 0;
@@ -213,17 +224,17 @@ public class MatchingEngine {
         PriorityQueue<Order> sellOrderBookPerSymbol = sellOrderBook.get(symbol);
         PriorityQueue<Order> buyOrderBookPerSymbol = buyOrderBook.get(symbol);
 
-        boolean sellOrderBookHasLimitOrder = sellOrderBookPerSymbol.stream().anyMatch(o -> o.getOrderType().equals(OrderType.LMT));
-        boolean buyOrderBookHasLimitOrder = buyOrderBookPerSymbol.stream().anyMatch(o -> o.getOrderType().equals(OrderType.LMT));
+        boolean sellOrderBookHasLimitOrder = sellOrderBookPerSymbol.stream().anyMatch(o -> o.getOrderType().equals(LMT));
+        boolean buyOrderBookHasLimitOrder = buyOrderBookPerSymbol.stream().anyMatch(o -> o.getOrderType().equals(LMT));
         return sellOrderBookHasLimitOrder || buyOrderBookHasLimitOrder;
     }
 
     private void tryAddToOrderBook(Order orderToAdd, HashMap<String, PriorityQueue<Order>> orderBook) {
         PriorityQueue<Order> orderBookPerSymbol = orderBook.get(orderToAdd.getSymbol());
         if (orderBookPerSymbol == null) {
-            if(orderToAdd.getSide().equals(BuySell.Buy)) {
+            if (orderToAdd.getSide().equals(BuySell.Buy)) {
                 orderBookPerSymbol = new PriorityQueue<>(buyOrderComparator);
-            }else{
+            } else {
                 orderBookPerSymbol = new PriorityQueue<>(sellOrderComparator);
             }
 
