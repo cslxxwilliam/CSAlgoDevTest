@@ -3,6 +3,7 @@ package models;
 import java.util.*;
 
 import static java.lang.Math.min;
+import static models.BuySell.Buy;
 import static models.OrderType.LMT;
 import static models.OrderType.MKT;
 
@@ -23,63 +24,33 @@ public class MatchingEngine {
             if (order.getStatus().equals(Status.Reject)) {
                 rejectedOrders.add(order);
             } else {
-                if (order.getSide().equals(BuySell.Buy)) {
-                    //ToDo should try match first
-                    output = output + matchBuy(order);
-                } else {
-
-                    output = output + matchSell(order);
-                }
+                output = output + matchAll(order);
             }
         }
 
         return output;
     }
 
-    //    private String matchBuy(Order newNewBuyOrder) {
-//        //add the new order to order book, either filled or not
-//        tryAddToOrderBook(newNewBuyOrder, buyOrderBook);
-//
-//        PriorityQueue<Order> sellOrderBookPerSymbol = sellOrderBook.get(newNewBuyOrder.getSymbol());
-//        String output = "";
-//
-//        PriorityQueue<Order> buyOrderBookPerSymbol = buyOrderBook.get(newNewBuyOrder.getSymbol());
-//
-//        Order peekTopBuyOrder = findTopBuyOrder(buyOrderBookPerSymbol);
-//
-//        //match with existing sell order book
-//        Order topBuyOrder;
-//        if (sellOrderBookPerSymbol != null) {
-//
-//            while (hasMatch(peekTopBuyOrder, buyOrderBookPerSymbol, sellOrderBookPerSymbol)) {
-//                topBuyOrder = buyOrderBookPerSymbol.poll();
-//                output=output+match(buyOrderBookPerSymbol, sellOrderBookPerSymbol, topBuyOrder);
-//                peekTopBuyOrder = findTopBuyOrder(buyOrderBookPerSymbol);
-//            }
-//
-//        }
-//
-//
-//        return output;
-//    }
-    private String matchSell(Order newSellOrder) {
-        tryAddToOrderBook(newSellOrder, sellOrderBook);
 
-        PriorityQueue<Order> buyOrderBookPerSymbol = buyOrderBook.get(newSellOrder.getSymbol());
+    private String matchAll(Order newNewBuyOrder) {
+        if (newNewBuyOrder.getSide().equals(Buy)) {
+            tryAddToOrderBook(newNewBuyOrder, buyOrderBook);
+        } else {
+            tryAddToOrderBook(newNewBuyOrder, sellOrderBook);
+        }
+
+        PriorityQueue<Order> buyOrderBookPerSymbol = buyOrderBook.get(newNewBuyOrder.getSymbol());
+        PriorityQueue<Order> sellOrderBookPerSymbol = sellOrderBook.get(newNewBuyOrder.getSymbol());
+
         String output = "";
-
-        PriorityQueue<Order> sellOrderBookPerSymbol = buyOrderBook.get(newSellOrder.getSymbol());
-
-        //match
-        if (sellOrderBookPerSymbol != null) {
-            while (hasMatch(buyOrderBookPerSymbol, sellOrderBookPerSymbol)) {
-                output = output + match(buyOrderBookPerSymbol, sellOrderBookPerSymbol);
-            }
-
+        //match with existing sell order book
+        while (hasMatch(buyOrderBookPerSymbol, sellOrderBookPerSymbol)) {
+            output = output + match(buyOrderBookPerSymbol, sellOrderBookPerSymbol);
         }
+
+
         return output;
     }
-
 
     public static Comparator<Order> buyOrderComparator = (c1, c2) -> {
         //price larger, the less
@@ -103,24 +74,6 @@ public class MatchingEngine {
         }
     };
 
-    //refactor buy and sell
-    private String matchBuy(Order newNewBuyOrder) {
-        //add the new order to order book, either filled or not
-        tryAddToOrderBook(newNewBuyOrder, buyOrderBook);
-
-        PriorityQueue<Order> sellOrderBookPerSymbol = sellOrderBook.get(newNewBuyOrder.getSymbol());
-        String output = "";
-
-        PriorityQueue<Order> buyOrderBookPerSymbol = buyOrderBook.get(newNewBuyOrder.getSymbol());
-
-        //match with existing sell order book
-        while (hasMatch(buyOrderBookPerSymbol, sellOrderBookPerSymbol)) {
-            output = output + match(buyOrderBookPerSymbol, sellOrderBookPerSymbol);
-        }
-
-
-        return output;
-    }
 
     private String match(PriorityQueue<Order> buyOrderBookPerSymbol, PriorityQueue<Order> sellOrderBookPerSymbol) {
         Order sell = sellOrderBookPerSymbol.poll();
@@ -132,9 +85,9 @@ public class MatchingEngine {
         if (buy.getOrderType().equals(MKT) && sell.getOrderType().equals(MKT)) {
             latestPrice = findLatestPriceInOrderBooks(sellOrderBookPerSymbol, buyOrderBookPerSymbol);
         } else {
-            if (buy.getOrderType().equals(LMT)&&sell.getOrderType().equals(MKT)) {
+            if (buy.getOrderType().equals(LMT) && sell.getOrderType().equals(MKT)) {
                 latestPrice = buy.getPrice();
-            } else if (buy.getOrderType().equals(MKT)&&sell.getOrderType().equals(LMT)) {
+            } else if (buy.getOrderType().equals(MKT) && sell.getOrderType().equals(LMT)) {
                 latestPrice = sell.getPrice();
             } else {
                 latestPrice = findLatestPriceBySeq(buy, sell);
@@ -170,7 +123,7 @@ public class MatchingEngine {
 
     //for both buy and sell
     private boolean hasMatch(PriorityQueue<Order> buyOrderBookPerSymbol, PriorityQueue<Order> sellOrderBookPerSymbol) {
-        if(buyOrderBookPerSymbol==null||sellOrderBookPerSymbol==null){
+        if (buyOrderBookPerSymbol == null || sellOrderBookPerSymbol == null) {
             return false;
         }
 
@@ -232,7 +185,7 @@ public class MatchingEngine {
     private void tryAddToOrderBook(Order orderToAdd, HashMap<String, PriorityQueue<Order>> orderBook) {
         PriorityQueue<Order> orderBookPerSymbol = orderBook.get(orderToAdd.getSymbol());
         if (orderBookPerSymbol == null) {
-            if (orderToAdd.getSide().equals(BuySell.Buy)) {
+            if (orderToAdd.getSide().equals(Buy)) {
                 orderBookPerSymbol = new PriorityQueue<>(buyOrderComparator);
             } else {
                 orderBookPerSymbol = new PriorityQueue<>(sellOrderComparator);
