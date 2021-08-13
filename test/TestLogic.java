@@ -158,7 +158,7 @@ public class TestLogic {
 
     //Match across multiple orders
     @Test
-    public void matchAcrossMultipleLimitOrders() {
+    public void matchAcrossLimitAndMarketOrders() {
         String validInput = "#OrderID,Symbol,Price,Side,OrderQuantity\n" +
                 "Order1,0700.HK,600,Sell,20000\n" +
                 "Order2,0700.HK,MKT,Buy,10000\n" +
@@ -171,6 +171,24 @@ public class TestLogic {
                 "Ack,Order3,0700.HK,610,Buy,10000\n" +
                 "Fill,Order1,0700.HK,600,Sell,20000,600,10000\n" +
                 "Fill,Order2,0700.HK,MKT,Buy,10000,600,10000\n" +
+                "Fill,Order1,0700.HK,600,Sell,20000,600,10000\n" +
+                "Fill,Order3,0700.HK,610,Buy,10000,600,10000\n", output);
+    }
+
+    @Test
+    public void matchAcrossMultipleLimitOrders() {
+        String validInput = "#OrderID,Symbol,Price,Side,OrderQuantity\n" +
+                "Order1,0700.HK,600,Sell,20000\n" +
+                "Order2,0700.HK,620,Buy,10000\n" +
+                "Order3,0700.HK,610,Buy,10000\n\n";
+        String output = app.addInput(validInput);
+
+        assertEquals("#ActionType,OrderID,Symbol,Price,Side,OrderQuantity,FillPrice,FillQuantity\n" +
+                "Ack,Order1,0700.HK,600,Sell,20000\n" +
+                "Ack,Order2,0700.HK,620,Buy,10000\n" +
+                "Ack,Order3,0700.HK,610,Buy,10000\n" +
+                "Fill,Order1,0700.HK,600,Sell,20000,600,10000\n" +
+                "Fill,Order2,0700.HK,620,Buy,10000,600,10000\n" +
                 "Fill,Order1,0700.HK,600,Sell,20000,600,10000\n" +
                 "Fill,Order3,0700.HK,610,Buy,10000,600,10000\n", output);
     }

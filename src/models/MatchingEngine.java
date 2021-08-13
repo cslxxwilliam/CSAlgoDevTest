@@ -150,10 +150,6 @@ public class MatchingEngine {
         if (sellOrder == null) {
             return false;
         }
-        //if new order LMT order
-        //if matching order is MKT order
-        // if matching order is LMT order and price < buy order
-        //if new order MKT
 
         if (buyOrder.getOrderType().equals(LMT) && sellOrder.getOrderType().equals(LMT)) {
             return buyOrder.getPrice() >= sellOrder.getPrice();
@@ -168,10 +164,6 @@ public class MatchingEngine {
         }
 
         return orderBookHasLimitOrderPerSymbol(buyOrder.getSymbol());
-    }
-
-    private Order findTopOrder(PriorityQueue<Order> buyOrderBookPerSymbol) {
-        return buyOrderBookPerSymbol.peek();
     }
 
     //find the top Limit order price in both buy and sell order books
