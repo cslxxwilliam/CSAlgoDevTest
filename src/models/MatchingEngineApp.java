@@ -5,10 +5,10 @@ import java.util.List;
 
 public class MatchingEngineApp {
     public MatchingEngine engine;
+    public static int seq =0;
 
     public MatchingEngineApp() {
         engine = new MatchingEngine();
-
     }
 
     public String addInput(String input) {
@@ -35,9 +35,9 @@ public class MatchingEngineApp {
             int qty = Integer.parseInt(orderDetails[4]);
             if (qty >= 10000000) {
                 status = Status.Reject;
-                order = buildOrder(orderDetails, status, orderId, symbol, side, qty);
+                order = buildOrder(seq++, orderDetails, status, orderId, symbol, side, qty);
             } else {
-                order = buildOrder(orderDetails, status, orderId, symbol, side, qty);
+                order = buildOrder(seq++, orderDetails, status, orderId, symbol, side, qty);
             }
             orderList.add(order);
             output = output + order.toString()+"\n";
@@ -49,13 +49,13 @@ public class MatchingEngineApp {
         return output;
     }
 
-    private Order buildOrder(String[] orderDetails, Status status, String orderId, String symbol, BuySell side, int qty) {
+    private Order buildOrder(int seq, String[] orderDetails, Status status, String orderId, String symbol, BuySell side, int qty) {
         Order order;
         if (orderDetails[2].equals("MKT")) {
-            order = new Order(status, orderId, symbol, OrderType.MKT, side, qty);
+            order = new Order(seq, status, orderId, symbol, OrderType.MKT, side, qty);
 
         } else {
-            order = new Order(status, orderId, symbol, Double.parseDouble(orderDetails[2]), side, qty);
+            order = new Order(seq, status, orderId, symbol, Double.parseDouble(orderDetails[2]), side, qty);
         }
         return order;
     }

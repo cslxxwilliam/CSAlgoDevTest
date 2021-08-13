@@ -124,6 +124,36 @@ public class TestLogic {
     }
 
     //Same price, timestamp matters
+    @Test
+    public void lowerSellPriceMatchFirst() {
+        String validInput = "#OrderID,Symbol,Price,Side,OrderQuantity\n" +
+                "Order1,0700.HK,610,Sell,10000\n" +
+                "Order2,0700.HK,600,Sell,10000\n" +
+                "Order3,0700.HK,610,Buy,10000\n\n";
+        String output = app.addInput(validInput);
+
+        assertEquals("#ActionType,OrderID,Symbol,Price,Side,OrderQuantity,FillPrice,FillQuantity\n" +
+                "Ack,Order1,0700.HK,610,Sell,10000\n" +
+                "Ack,Order2,0700.HK,600,Sell,10000\n" +
+                "Ack,Order3,0700.HK,610,Buy,10000\n" +
+                "Fill,Order2,0700.HK,600,Sell,10000,600,10000\n" +
+                "Fill,Order3,0700.HK,610,Buy,10000,600,10000\n", output);
+    }
+    @Test
+    public void higherBuyPriceMatchFirst() {
+        String validInput = "#OrderID,Symbol,Price,Side,OrderQuantity\n" +
+                "Order1,0700.HK,600,Buy,10000\n" +
+                "Order2,0700.HK,610,Buy,10000\n" +
+                "Order3,0700.HK,600,Sell,10000\n\n";
+        String output = app.addInput(validInput);
+
+        assertEquals("#ActionType,OrderID,Symbol,Price,Side,OrderQuantity,FillPrice,FillQuantity\n" +
+                "Ack,Order1,0700.HK,600,Buy,10000\n" +
+                "Ack,Order2,0700.HK,610,Buy,10000\n" +
+                "Ack,Order3,0700.HK,600,Sell,10000\n" +
+                "Fill,Order2,0700.HK,610,Buy,10000,610,10000\n" +
+                "Fill,Order3,0700.HK,600,Sell,10000,610,10000\n", output);
+    }
 
     //Match across multiple orders
 

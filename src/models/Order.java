@@ -26,7 +26,8 @@ public class Order {
         this.orderType = orderType;
     }
 
-    public Order(Status status, String orderId, String symbol, double price, BuySell side, int qty) {
+    public Order(int seq, Status status, String orderId, String symbol, double price, BuySell side, int qty) {
+        this.seq = seq;
         this.status = status;
         this.orderId = orderId;
         this.side = side;
@@ -38,11 +39,8 @@ public class Order {
         this.unFilledQty = qty;
     }
 
-    public Order(Status status, String orderId, String symbol, double price, BuySell side, int qty, int filledQty) {
-
-    }
-
-    public Order(Status status, String orderId, String symbol, OrderType orderType, BuySell side, int qty) {
+    public Order(int seq, Status status, String orderId, String symbol, OrderType orderType, BuySell side, int qty) {
+        this.seq = seq;
         this.status = status;
         this.orderId = orderId;
         this.symbol = symbol;
