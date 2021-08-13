@@ -40,7 +40,7 @@ public class MatchingEngineApp {
                 order = buildOrder(orderDetails, status, orderId, symbol, side, qty);
             }
             orderList.add(order);
-            output = output + order.toString();
+            output = output + order.toString()+"\n";
         }
 
         //add to orderbook

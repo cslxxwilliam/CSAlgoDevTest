@@ -1,6 +1,9 @@
 package models;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Order {
     private OrderType orderType;
     private Status status;
@@ -9,9 +12,11 @@ public class Order {
     private double price;
     private BuySell side;
     private int qty;
-    private int filledQty;
-    private double filledPrice;
+
+    List<Fill> fillList = new ArrayList<>();
     private int seq;
+    private int filledQty;
+    private int unFilledQty;
 
     public OrderType getOrderType() {
         return orderType;
@@ -79,14 +84,19 @@ public class Order {
 
         this.status = Status.Fill;
         this.filledQty = filledQty + newMatchedQty;
-        this.filledPrice = matchedOrder.getOrderType().equals(OrderType.MKT)?this.price:matchedOrder.getPrice();
-        return this.toString();
+        this.unFilledQty = qty - filledQty;
+
+        double filledPrice = matchedOrder.getOrderType().equals(OrderType.MKT) ? this.price : matchedOrder.getPrice();
+        Fill fill = new Fill(filledPrice, newMatchedQty);
+
+        this.fillList.add(fill);
+        return this.toString()+fill.toString()+"\n";
     }
 
     public String fill(Order toFill, double fillPrice) {
         int newMatchedQty;
 
-        if(this.qty<=toFill.qty){
+        if((this.qty-filledQty)<=toFill.getUnFilledQty()){
             newMatchedQty = this.qty;
         }else {
             newMatchedQty = toFill.qty;
@@ -94,8 +104,12 @@ public class Order {
 
         this.status = Status.Fill;
         this.filledQty = filledQty + newMatchedQty;
-        this.filledPrice = fillPrice;
-        return this.toString();
+        this.unFilledQty = qty - filledQty;
+
+        Fill fill = new Fill(fillPrice, newMatchedQty);
+
+        this.fillList.add(fill);
+        return this.toString()+","+fill.toString()+"\n";
     }
 
     public Status getStatus() {
@@ -133,7 +147,7 @@ public class Order {
                             "," + printPrice()
                              +
                             "," + side +
-                            "," + qty + "\n"
+                            "," + qty
                     ;
         }
 
@@ -143,10 +157,7 @@ public class Order {
                         "," + symbol +
                         "," + printPrice()+
                         "," + side +
-                        "," + qty +
-                        "," + formatNum(filledPrice) +
-                        "," + filledQty +
-                        "\n"
+                        "," + qty
                 ;
     }
 
@@ -174,4 +185,11 @@ public class Order {
         this.seq = seq;
     }
 
+    public int getUnFilledQty() {
+        return unFilledQty;
+    }
+
+    public void setUnFilledQty(int unFilledQty) {
+        this.unFilledQty = unFilledQty;
+    }
 }
