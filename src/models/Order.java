@@ -11,6 +11,7 @@ public class Order {
     private int qty;
     private int filledQty;
     private double filledPrice;
+    private int seq;
 
     public OrderType getOrderType() {
         return orderType;
@@ -76,9 +77,24 @@ public class Order {
             newMatchedQty = matchedOrder.qty;
         }
 
-        this.status = status.Fill;
+        this.status = Status.Fill;
         this.filledQty = filledQty + newMatchedQty;
         this.filledPrice = matchedOrder.getOrderType().equals(OrderType.MKT)?this.price:matchedOrder.getPrice();
+        return this.toString();
+    }
+
+    public String fill(Order toFill, double fillPrice) {
+        int newMatchedQty;
+
+        if(this.qty<=toFill.qty){
+            newMatchedQty = this.qty;
+        }else {
+            newMatchedQty = toFill.qty;
+        }
+
+        this.status = Status.Fill;
+        this.filledQty = filledQty + newMatchedQty;
+        this.filledPrice = fillPrice;
         return this.toString();
     }
 
@@ -142,10 +158,20 @@ public class Order {
         return orderType.toString();
     }
 
+
     private String formatNum(double price) {
         if(price == (long) price)
             return String.format("%d",(long)price);
         else
             return String.format("%s",price);
     }
+
+    public int getSeq() {
+        return seq;
+    }
+
+    public void setSeq(int seq) {
+        this.seq = seq;
+    }
+
 }
