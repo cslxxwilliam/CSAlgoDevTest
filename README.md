@@ -11,7 +11,9 @@ It is a Maven project (see pom.xml, file Apache Maven 3.8.1 is recommended) and 
 All dependencies are downloaded from Internet when you run <code>mvn clean install</code>.
 
 ## Building
-<code>mvn clean install</code> or use <code>install.bat</code> or <code>install.sh</code> in the project root folder.
+Build the application using:
+
+<code>mvn clean install</code>.
 
 Resulting matchingEngine-1.0.jar JAR file will be created in <code>target</code> sub-folder.
 
@@ -22,9 +24,7 @@ Start the application using:
 
 <code>java -jar target/matchingEngine-1.0.jar</code>
 
-or use <code>start.bat</code> or <code>start.sh</code> in the project root folder.
-
 ## Testing
 Run the test using:
 
-<code>mvn clean test</code> or use <code>test.bat</code> or <code>test.sh</code> in the project root folder.
+<code>mvn clean test</code>.
