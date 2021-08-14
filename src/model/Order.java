@@ -1,11 +1,13 @@
 package model;
 
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class Order implements Comparable<Order>{
+import static model.BuySell.Buy;
+import static model.BuySell.Sell;
+
+public class Order implements Comparable<Order> {
     private final OrderType orderType;
     private Status status;
     private final String orderId;
@@ -27,7 +29,7 @@ public class Order implements Comparable<Order>{
         this.price = price;
         this.qty = qty;
         this.orderType = orderType;
-        this.filledQty =0;
+        this.filledQty = 0;
         this.unFilledQty = qty;
     }
 
@@ -53,7 +55,7 @@ public class Order implements Comparable<Order>{
         this.fillList.add(fill);
 
         //ToDo refactor to diff reports type
-        return new FillExecutionReport(this, fill, this.toString()+","+fill.toString());
+        return new FillExecutionReport(this, fill, this.toString() + "," + fill.toString());
     }
 
     public Status getStatus() {
@@ -70,14 +72,14 @@ public class Order implements Comparable<Order>{
                 status +
                         "," + orderId +
                         "," + symbol +
-                        "," + printPrice()+
+                        "," + printPrice() +
                         "," + side +
                         "," + qty
                 ;
     }
 
     private String printPrice() {
-        if(orderType.equals(OrderType.LMT)){
+        if (orderType.equals(OrderType.LMT)) {
             return formatNum(price);
         }
 
@@ -86,10 +88,10 @@ public class Order implements Comparable<Order>{
 
 
     private String formatNum(double price) {
-        if(price == (long) price)
-            return String.format("%d",(long)price);
+        if (price == (long) price)
+            return String.format("%d", (long) price);
         else
-            return String.format("%s",price);
+            return String.format("%s", price);
     }
 
     public int getSeq() {
@@ -101,29 +103,26 @@ public class Order implements Comparable<Order>{
     }
 
     public boolean isFullyFilled() {
-        return filledQty>=qty;
+        return filledQty >= qty;
     }
 
-    public static Comparator<Order> buyOrderComparator = (c1, c2) -> {
-        //price larger, the less
-        if (c1.getOrderType().compareTo(c2.getOrderType()) == 0) {
-            return (int) -(c1.getPrice() - c2.getPrice());
-        }
-        //market order less than limit
-        else {
-            return c1.getOrderType().compareTo(c2.getOrderType());
-        }
-    };
-    public static Comparator<Order> sellOrderComparator = (c1, c2) -> {
-        //price lower, the less
-        if (c1.getOrderType().compareTo(c2.getOrderType()) == 0) {
-            return (int) (c1.getPrice() - c2.getPrice());
-        }
-        //market order less than limit
-        else {
-            return c1.getOrderType().compareTo(c2.getOrderType());
-        }
-    };
+    public static Comparator<Order> buyOrderComparator = getOrderComparator(Buy);
+
+    public static Comparator<Order> sellOrderComparator = getOrderComparator(Sell);
+
+    private static Comparator<Order> getOrderComparator(BuySell side) {
+        return (o1, o2) -> {
+            if (o1.getOrderType().compareTo(o2.getOrderType()) == 0) {
+                if (side.equals(Buy)){
+                    return (int) -(o1.getPrice() - o2.getPrice());
+                }else{
+                    return (int) (o1.getPrice() - o2.getPrice());
+                }
+            } else {
+                return o1.getOrderType().compareTo(o2.getOrderType());
+            }
+        };
+    }
 
     @Override
     public int compareTo(Order order) {
