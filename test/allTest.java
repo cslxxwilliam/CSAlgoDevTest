@@ -1,5 +1,4 @@
-import models.MatchingEngineApp;
-import org.junit.Before;
+import controller.MatchingEngineApp;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

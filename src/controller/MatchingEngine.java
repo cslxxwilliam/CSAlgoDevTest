@@ -1,11 +1,16 @@
-package models;
+package controller;
+
+import model.ExecutionReport;
+import model.Fill;
+import model.Order;
+import model.Status;
 
 import java.util.*;
 
 import static java.lang.Math.min;
-import static models.BuySell.Buy;
-import static models.OrderType.LMT;
-import static models.OrderType.MKT;
+import static model.BuySell.Buy;
+import static model.OrderType.LMT;
+import static model.OrderType.MKT;
 
 public class MatchingEngine {
     private HashMap<String, PriorityQueue<Order>> buyOrderBook;

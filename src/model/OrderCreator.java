@@ -1,4 +1,4 @@
-package models;
+package model;
 
 public class OrderCreator {
     public Order validateAndCreate(String[] split) {

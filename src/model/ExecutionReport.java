@@ -1,6 +1,6 @@
-package models;
+package model;
 
-public class ExecutionReport {
+public class ExecutionReport  {
     private ReportType type;
     private Order order;
     private String report;
@@ -10,6 +10,11 @@ public class ExecutionReport {
         this.fill = fill;
         this.type = type;
         this.order = order;
+        this.report = report;
+    }
+
+    public ExecutionReport(ReportType type, String report) {
+        this.type = type;
         this.report = report;
     }
 
