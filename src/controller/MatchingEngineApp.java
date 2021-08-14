@@ -1,14 +1,12 @@
 package controller;
 
-import model.*;
+import model.ExecutionReport;
+import model.Order;
 import validator.HeaderValidator;
-import validator.OrderValidator;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-
-import static model.ReportType.Ack;
 
 public class MatchingEngineApp {
     public MatchingEngine engine;
@@ -20,12 +18,6 @@ public class MatchingEngineApp {
 
     public String addInput(String input) {
         String[] split = input.split("\\R");
-        List<Order> orderList = new ArrayList<>();
-
-        //validate header
-        //each order
-        //validate order
-        //call factory to create
 
         List<ExecutionReport> headerValidation = HeaderValidator.validate(split[0]);
         List<ExecutionReport> executionReports = new ArrayList<>(headerValidation);
@@ -34,23 +26,14 @@ public class MatchingEngineApp {
         if (!isFatal(headerValidation)) {
 
             //validate orders
-            Order order = null;
+            Order order;
             for (int i = 1; i < split.length; i++) {
                 String[] orderDetails = split[i].split(",");
-
-                //ToDo convert to a factory with validation
-
-//                executionReports.addAll(OrderValidator.validate(qty));
-
                 order = OrderFactory.create(orderDetails[0], orderDetails[1], orderDetails[2], orderDetails[3], orderDetails[4]);
 
-//
-                orderList.add(order);
-                executionReports.add(new ExecutionReport(Ack, order, null, order.toString() + "\n"));
+                executionReports.addAll(engine.add(order));
+                executionReports.addAll(engine.match(order));
             }
-
-            //add to orderbook
-            executionReports.addAll(engine.addAndMatch(orderList));
         }
 
         return printReport(executionReports);
@@ -69,8 +52,6 @@ public class MatchingEngineApp {
         }
         return output;
     }
-
-
 
     //refator for a better comparator
     public static Comparator<ExecutionReport> reportComparator = (r1, r2) -> {

@@ -3,7 +3,6 @@ package controller;
 import model.ExecutionReport;
 import model.Fill;
 import model.Order;
-import model.Status;
 
 import java.util.*;
 
@@ -11,6 +10,8 @@ import static java.lang.Math.min;
 import static model.BuySell.Buy;
 import static model.OrderType.LMT;
 import static model.OrderType.MKT;
+import static model.ReportType.Ack;
+import static model.Status.Reject;
 
 public class MatchingEngine {
     private HashMap<String, PriorityQueue<Order>> buyOrderBook;
@@ -23,31 +24,30 @@ public class MatchingEngine {
         rejectedOrders = new ArrayList<>();
     }
 
-    public List<ExecutionReport> addAndMatch(List<Order> orderList) {
+
+    public List<ExecutionReport> add(Order order) {
         List<ExecutionReport> reports = new ArrayList<>();
-        for (Order order : orderList) {
-            if (order.getStatus().equals(Status.Reject)) {
-                rejectedOrders.add(order);
-            } else {
-              reports.addAll(addAndMatch(order));
+        if(order.getStatus().equals(Reject)){
+            rejectedOrders.add(order);
+        }else{
+            if(order.getSide().equals(Buy)){
+                tryAddToOrderBook(order, buyOrderBook);
+            }else{
+                tryAddToOrderBook(order, sellOrderBook);
             }
+
         }
+        reports.add(new ExecutionReport(Ack, order, null, order.toString() + "\n"));
 
         return reports;
     }
 
-
-    private List<ExecutionReport> addAndMatch(Order newOrder) {
-        if (newOrder.getSide().equals(Buy)) {
-            tryAddToOrderBook(newOrder, buyOrderBook);
-        } else {
-            tryAddToOrderBook(newOrder, sellOrderBook);
-        }
-
+    public List<ExecutionReport> match(Order newOrder) {
         PriorityQueue<Order> buyOrderBookPerSymbol = buyOrderBook.get(newOrder.getSymbol());
         PriorityQueue<Order> sellOrderBookPerSymbol = sellOrderBook.get(newOrder.getSymbol());
 
         List<ExecutionReport> executionReports = new ArrayList<>();
+
         //match with existing sell order book
         while (hasMatch(buyOrderBookPerSymbol, sellOrderBookPerSymbol)) {
             executionReports.addAll(match(buyOrderBookPerSymbol, sellOrderBookPerSymbol));
