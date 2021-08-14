@@ -1,7 +1,6 @@
 package controller;
 
-import model.ExecutionReport;
-import model.FillExecutionReport;
+import model.ExecutionReportable;
 import model.Order;
 import validator.HeaderValidator;
 
@@ -19,8 +18,8 @@ public class MatchingEngineApp {
     public String addInput(String input) {
         String[] split = input.split("\\R");
 
-        List<ExecutionReport> headerValidation = HeaderValidator.validate(split[0]);
-        List<ExecutionReport> executionReports = new ArrayList<>(headerValidation);
+        List<ExecutionReportable> headerValidation = HeaderValidator.validate(split[0]);
+        List<ExecutionReportable> executionReports = new ArrayList<>(headerValidation);
 
         //no error
         if (!isFatal(headerValidation)) {
@@ -39,15 +38,15 @@ public class MatchingEngineApp {
         return printReport(executionReports);
     }
 
-    private boolean isFatal(List<ExecutionReport> headerValidation) {
+    private boolean isFatal(List<ExecutionReportable> headerValidation) {
         return headerValidation.stream().allMatch(v ->v.getReport().equals("Invalid headers"));
     }
 
-    private String printReport(List<ExecutionReport> executionReports) {
-        List<ExecutionReport> sorted = executionReports.stream().sorted().collect(Collectors.toList());
+    private String printReport(List<ExecutionReportable> executionReports) {
+        List<ExecutionReportable> sorted = executionReports.stream().sorted().collect(Collectors.toList());
 
         String output = "";
-        for (ExecutionReport report : sorted) {
+        for (ExecutionReportable report : sorted) {
             output = output + report.getReport();
         }
         return output;

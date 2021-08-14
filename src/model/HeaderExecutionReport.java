@@ -1,16 +1,11 @@
 package model;
 
-public class HeaderExecutionReport implements ExecutionReport {
+public class HeaderExecutionReport implements ExecutionReportable {
     public static final int HEADER_REPORT_PRIORITY = 0;
     private String report;
 
     public HeaderExecutionReport(String report) {
         this.report = report;
-    }
-
-    @Override
-    public ReportType getType() {
-        return ReportType.Header;
     }
 
     @Override
@@ -24,7 +19,7 @@ public class HeaderExecutionReport implements ExecutionReport {
     }
 
     @Override
-    public int compareTo(ExecutionReport r2) {
+    public int compareTo(ExecutionReportable o) {
         return 0;
     }
 }

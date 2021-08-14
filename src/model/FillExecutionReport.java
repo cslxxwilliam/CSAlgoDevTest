@@ -1,8 +1,6 @@
 package model;
 
-import java.util.Comparator;
-
-public class FillExecutionReport implements ExecutionReport {
+public class FillExecutionReport implements ExecutionReportable {
     public static final int FILL_REPORT_PRIORITY = 3;
     private ReportType type;
     private Order order;
@@ -27,18 +25,13 @@ public class FillExecutionReport implements ExecutionReport {
     }
 
     @Override
-    public int compareTo(ExecutionReport o) {
+    public int compareTo(ExecutionReportable o) {
         if(o instanceof FillExecutionReport){
             int fillCompared = this.fill.compareTo(((FillExecutionReport) o).getFill());
             return fillCompared ==0?this.order.compareTo(((FillExecutionReport) o).getOrder()):fillCompared;
         }
 
         return this.getPriority()-o.getPriority();
-    }
-
-    @Override
-    public ReportType getType() {
-        return type;
     }
 
     public void setType(ReportType type) {

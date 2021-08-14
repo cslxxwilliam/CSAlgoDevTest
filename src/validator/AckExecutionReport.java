@@ -1,11 +1,9 @@
 package validator;
 
-import model.ExecutionReport;
-import model.FillExecutionReport;
+import model.ExecutionReportable;
 import model.Order;
-import model.ReportType;
 
-public class AckExecutionReport implements ExecutionReport {
+public class AckExecutionReport implements ExecutionReportable {
 
     public static final int ACK_REPORT_PRIORITY = 2;
     private String report;
@@ -15,11 +13,6 @@ public class AckExecutionReport implements ExecutionReport {
 
         this.order = order;
         this.report = report;
-    }
-
-    @Override
-    public ReportType getType() {
-        return ReportType.Ack;
     }
 
     @Override
@@ -33,7 +26,7 @@ public class AckExecutionReport implements ExecutionReport {
     }
 
     @Override
-    public int compareTo(ExecutionReport o) {
+    public int compareTo(ExecutionReportable o) {
         if(o instanceof AckExecutionReport){
             return this.order.compareTo(((AckExecutionReport) o).getOrder());
         }

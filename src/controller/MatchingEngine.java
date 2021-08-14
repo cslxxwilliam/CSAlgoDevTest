@@ -1,8 +1,8 @@
 package controller;
 
-import model.ExecutionReport;
-import model.FillExecutionReport;
+import model.ExecutionReportable;
 import model.Fill;
+import model.FillExecutionReport;
 import model.Order;
 import validator.AckExecutionReport;
 
@@ -12,13 +12,12 @@ import static java.lang.Math.min;
 import static model.BuySell.Buy;
 import static model.OrderType.LMT;
 import static model.OrderType.MKT;
-import static model.ReportType.Ack;
 import static model.Status.Reject;
 
 public class MatchingEngine {
-    private HashMap<String, PriorityQueue<Order>> buyOrderBook;
-    private HashMap<String, PriorityQueue<Order>> sellOrderBook;
-    private List<Order> rejectedOrders;
+    private final HashMap<String, PriorityQueue<Order>> buyOrderBook;
+    private final HashMap<String, PriorityQueue<Order>> sellOrderBook;
+    private final List<Order> rejectedOrders;
 
     public MatchingEngine() {
         buyOrderBook = new HashMap<>();
@@ -27,8 +26,8 @@ public class MatchingEngine {
     }
 
 
-    public List<ExecutionReport> add(Order order) {
-        List<ExecutionReport> reports = new ArrayList<>();
+    public List<ExecutionReportable> add(Order order) {
+        List<ExecutionReportable> reports = new ArrayList<>();
         if(order.getStatus().equals(Reject)){
             rejectedOrders.add(order);
         }else{
