@@ -61,9 +61,10 @@ public class MatchingEngine {
     private List<FillExecutionReport> match(PriorityQueue<Order> buyOrderBookPerSymbol, PriorityQueue<Order> sellOrderBookPerSymbol) {
         Order sell = sellOrderBookPerSymbol.poll();
         Order buy = buyOrderBookPerSymbol.poll();
+        assert buy != null;
+        assert sell != null;
 
         double latestPrice;
-
         if (buy.getOrderType().equals(MKT) && sell.getOrderType().equals(MKT)) {
             latestPrice = findLatestPriceInOrderBooks(sellOrderBookPerSymbol, buyOrderBookPerSymbol);
         } else {
@@ -78,7 +79,6 @@ public class MatchingEngine {
 
         int fillQty = calculateFillQty(buy, sell);
 
-        //ToDo refactor
         List<FillExecutionReport> executionReports = new ArrayList<>(fill(buy, sell, fillQty, latestPrice));
 
         if (!sell.isFullyFilled()) {
@@ -159,7 +159,7 @@ public class MatchingEngine {
             return 0;
         } else if (firstInBuyOrderBook.isPresent() && firstInSellOrderBook.isEmpty()) {
             return firstInBuyOrderBook.get().getPrice();
-        } else if (firstInBuyOrderBook.isEmpty() && firstInSellOrderBook.isPresent()) {
+        } else if (firstInBuyOrderBook.isEmpty()) {
             return firstInSellOrderBook.get().getPrice();
         } else {
             if (firstInBuyOrderBook.get().getSeq() < firstInSellOrderBook.get().getSeq()) {

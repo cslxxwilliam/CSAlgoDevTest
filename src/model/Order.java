@@ -54,7 +54,6 @@ public class Order implements Comparable<Order> {
 
         this.fillList.add(fill);
 
-        //ToDo refactor to diff reports type
         return new FillExecutionReport(this, fill, this.toString() + "," + fill.toString());
     }
 
