@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class TestLogic {
+public class allTest {
     private MatchingEngineApp app = new MatchingEngineApp();
 
 //ToDo test structure
