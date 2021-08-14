@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class Order {
+public class Order implements Comparable<Order>{
     private OrderType orderType;
     private Status status;
     private String orderId;
@@ -64,7 +64,7 @@ public class Order {
         this.qty = qty;
     }
 
-    public ExecutionReport fill(int fillQty, double fillPrice, int fillSeq) {
+    public FillExecutionReport fill(int fillQty, double fillPrice, int fillSeq) {
         this.status = Status.Fill;
         this.filledQty = filledQty + fillQty;
         this.unFilledQty = qty - filledQty;
@@ -74,7 +74,7 @@ public class Order {
         this.fillList.add(fill);
 
         //ToDo refactor to diff reports type
-        return new ExecutionReport(ReportType.Fill, this, fill, this.toString()+","+fill.toString()+"\n");
+        return new FillExecutionReport(ReportType.Fill, this, fill, this.toString()+","+fill.toString()+"\n");
     }
 
     public Status getStatus() {
@@ -182,4 +182,9 @@ public class Order {
             return c1.getOrderType().compareTo(c2.getOrderType());
         }
     };
+
+    @Override
+    public int compareTo(Order order) {
+        return this.seq - order.getSeq();
+    }
 }

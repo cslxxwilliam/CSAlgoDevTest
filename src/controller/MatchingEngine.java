@@ -1,8 +1,10 @@
 package controller;
 
 import model.ExecutionReport;
+import model.FillExecutionReport;
 import model.Fill;
 import model.Order;
+import validator.AckExecutionReport;
 
 import java.util.*;
 
@@ -37,16 +39,16 @@ public class MatchingEngine {
             }
 
         }
-        reports.add(new ExecutionReport(Ack, order, null, order.toString() + "\n"));
+        reports.add(new AckExecutionReport(order, order.toString() + "\n"));
 
         return reports;
     }
 
-    public List<ExecutionReport> match(Order newOrder) {
+    public List<FillExecutionReport> match(Order newOrder) {
         PriorityQueue<Order> buyOrderBookPerSymbol = buyOrderBook.get(newOrder.getSymbol());
         PriorityQueue<Order> sellOrderBookPerSymbol = sellOrderBook.get(newOrder.getSymbol());
 
-        List<ExecutionReport> executionReports = new ArrayList<>();
+        List<FillExecutionReport> executionReports = new ArrayList<>();
 
         //match with existing sell order book
         while (hasMatch(buyOrderBookPerSymbol, sellOrderBookPerSymbol)) {
@@ -57,11 +59,10 @@ public class MatchingEngine {
     }
 
 
-    private List<ExecutionReport> match(PriorityQueue<Order> buyOrderBookPerSymbol, PriorityQueue<Order> sellOrderBookPerSymbol) {
+    private List<FillExecutionReport> match(PriorityQueue<Order> buyOrderBookPerSymbol, PriorityQueue<Order> sellOrderBookPerSymbol) {
         Order sell = sellOrderBookPerSymbol.poll();
         Order buy = buyOrderBookPerSymbol.poll();
 
-        //filled
         double latestPrice;
 
         if (buy.getOrderType().equals(MKT) && sell.getOrderType().equals(MKT)) {
@@ -79,7 +80,7 @@ public class MatchingEngine {
         int fillQty = calculateFillQty(buy, sell);
 
         //ToDo refactor
-        List<ExecutionReport> executionReports = new ArrayList<>(fill(buy, sell, fillQty, latestPrice));
+        List<FillExecutionReport> executionReports = new ArrayList<>(fill(buy, sell, fillQty, latestPrice));
 
         if (!sell.isFullyFilled()) {
             sellOrderBookPerSymbol.add(sell);
@@ -91,8 +92,8 @@ public class MatchingEngine {
         return executionReports;
     }
 
-    private List<ExecutionReport> fill(Order buy, Order sell, int fillQty, double latestPrice) {
-        List<ExecutionReport> reports=new ArrayList<>();
+    private List<FillExecutionReport> fill(Order buy, Order sell, int fillQty, double latestPrice) {
+        List<FillExecutionReport> reports=new ArrayList<>();
         int fillSeq = Fill.nextSeq();
 
 

@@ -1,6 +1,6 @@
 package model;
 
-public class Fill {
+public class Fill implements Comparable<Fill>{
     private double price;
     private int qty;
     private int seq;
@@ -36,5 +36,10 @@ public class Fill {
             return String.format("%d",(long)price);
         else
             return String.format("%s",price);
+    }
+
+    @Override
+    public int compareTo(Fill o) {
+        return this.getSeq() - o.getSeq();
     }
 }

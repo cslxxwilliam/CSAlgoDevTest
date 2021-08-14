@@ -1,11 +1,13 @@
 package controller;
 
 import model.ExecutionReport;
+import model.FillExecutionReport;
 import model.Order;
 import validator.HeaderValidator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MatchingEngineApp {
     public MatchingEngine engine;
@@ -42,10 +44,10 @@ public class MatchingEngineApp {
     }
 
     private String printReport(List<ExecutionReport> executionReports) {
-        executionReports.sort(ExecutionReport.reportComparator);
+        List<ExecutionReport> sorted = executionReports.stream().sorted().collect(Collectors.toList());
 
         String output = "";
-        for (ExecutionReport report : executionReports) {
+        for (ExecutionReport report : sorted) {
             output = output + report.getReport();
         }
         return output;

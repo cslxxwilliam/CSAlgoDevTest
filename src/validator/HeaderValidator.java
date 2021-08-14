@@ -1,21 +1,20 @@
 package validator;
 
+import model.HeaderExecutionReport;
 import model.ExecutionReport;
-import model.ReportType;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class HeaderValidator implements Validator{
     public static List<ExecutionReport> validate(String headers) {
         List<ExecutionReport> reports = new ArrayList<>();
         if (!headers.equals("#OrderID,Symbol,Price,Side,OrderQuantity")) {
-            reports.add(new ExecutionReport(ReportType.Header,"Invalid headers"));
+            reports.add(new HeaderExecutionReport("Invalid headers"));
             return reports;
         }
 
-        reports.add(new ExecutionReport(ReportType.Header, "#ActionType,OrderID,Symbol,Price,Side,OrderQuantity,FillPrice,FillQuantity\n"));
+        reports.add(new HeaderExecutionReport("#ActionType,OrderID,Symbol,Price,Side,OrderQuantity,FillPrice,FillQuantity\n"));
 
         return reports;
     }
