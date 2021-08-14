@@ -1,1 +1,0 @@
-$JAVA_HOME/bin/java -showversion -Xms1800m -Xmx1800m -XX:MaxMetaspaceSize=2g -jar target/matchingEngine-1.0.jar
