@@ -6,8 +6,6 @@ import static org.junit.Assert.assertEquals;
 public class allTest {
     private MatchingEngineApp app = new MatchingEngineApp();
 
-//ToDo test structure
-
     @Test
     public void validateHeaders() {
         String invalidInputHeader = "#OrderIDTest,Symbol,Price,Side,OrderQuantity\n" +
