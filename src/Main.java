@@ -9,27 +9,17 @@ import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        BufferedReader reader = new BufferedReader(
-                new InputStreamReader(System.in));
-
-
-        OrderCreator orderCreator = new OrderCreator();
-        MatchingEngine matchingEngine = new MatchingEngine();
-
-        //MatchingEngineApp
-         //input string
-         //output string
-
         MatchingEngineApp matchingEngineApp = new MatchingEngineApp();
+        System.out.println("Welcome to Matching Engine!\nUsage: 2 newlines to end your orders");
 
         Scanner stdin = new Scanner(new BufferedInputStream(System.in));
-        stdin.useDelimiter("\n");
+        stdin.useDelimiter("\\R");
         while(true){
 
             String inputOrders = "";
             String line="";
             while(!(line = stdin.nextLine()).isEmpty()) {
-                inputOrders = inputOrders.concat(line);
+                inputOrders = inputOrders.concat(line).concat("\n");
             }
             String output = matchingEngineApp.addInput(inputOrders);
 

@@ -15,7 +15,7 @@ public class MatchingEngineApp {
     }
 
     public String addInput(String input) {
-        String[] split = input.split("\n");
+        String[] split = input.split("\\R");
         List<ExecutionReport> executionReports = new ArrayList<>();
         List<Order> orderList = new ArrayList<>();
         if (!split[0].equals("#OrderID,Symbol,Price,Side,OrderQuantity")) {
