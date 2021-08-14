@@ -28,12 +28,12 @@ public class MatchingEngine {
 
     public List<ExecutionReportable> add(Order order) {
         List<ExecutionReportable> reports = new ArrayList<>();
-        if(order.getStatus().equals(Reject)){
+        if (order.getStatus().equals(Reject)) {
             rejectedOrders.add(order);
-        }else{
-            if(order.getSide().equals(Buy)){
+        } else {
+            if (order.getSide().equals(Buy)) {
                 tryAddToOrderBook(order, buyOrderBook);
-            }else{
+            } else {
                 tryAddToOrderBook(order, sellOrderBook);
             }
 
@@ -92,7 +92,7 @@ public class MatchingEngine {
     }
 
     private List<FillExecutionReport> fill(Order buy, Order sell, int fillQty, double latestPrice) {
-        List<FillExecutionReport> reports=new ArrayList<>();
+        List<FillExecutionReport> reports = new ArrayList<>();
         int fillSeq = Fill.nextSeq();
 
 
@@ -117,7 +117,7 @@ public class MatchingEngine {
 
     //for both buy and sell
     private boolean hasMatch(PriorityQueue<Order> buyOrderBookPerSymbol, PriorityQueue<Order> sellOrderBookPerSymbol) {
-        if (buyOrderBookPerSymbol== null || sellOrderBookPerSymbol == null) {
+        if (buyOrderBookPerSymbol == null || sellOrderBookPerSymbol == null) {
             return false;
         }
         if (buyOrderBookPerSymbol.isEmpty() || sellOrderBookPerSymbol.isEmpty()) {

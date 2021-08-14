@@ -6,26 +6,17 @@ import java.util.Comparator;
 import java.util.List;
 
 public class Order implements Comparable<Order>{
-    private OrderType orderType;
+    private final OrderType orderType;
     private Status status;
-    private String orderId;
-    private String symbol;
-    private double price;
-    private BuySell side;
-    private int qty;
-
+    private final String orderId;
+    private final String symbol;
+    private final double price;
+    private final BuySell side;
+    private final int qty;
     List<Fill> fillList = new ArrayList<>();
-    private int seq;
+    private final int seq;
     private int filledQty;
     private int unFilledQty;
-
-    public OrderType getOrderType() {
-        return orderType;
-    }
-
-    public void setOrderType(OrderType orderType) {
-        this.orderType = orderType;
-    }
 
     public Order(int seq, Status status, String orderId, String symbol, OrderType orderType, double price, BuySell side, int qty) {
         this.seq = seq;
@@ -40,28 +31,16 @@ public class Order implements Comparable<Order>{
         this.unFilledQty = qty;
     }
 
+    public OrderType getOrderType() {
+        return orderType;
+    }
+
     public String getSymbol() {
         return symbol;
     }
 
-    public void setSymbol(String symbol) {
-        this.symbol = symbol;
-    }
-
     public double getPrice() {
         return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
-    public int getQty() {
-        return qty;
-    }
-
-    public void setQty(int qty) {
-        this.qty = qty;
     }
 
     public FillExecutionReport fill(int fillQty, double fillPrice, int fillSeq) {
@@ -74,48 +53,19 @@ public class Order implements Comparable<Order>{
         this.fillList.add(fill);
 
         //ToDo refactor to diff reports type
-        return new FillExecutionReport(ReportType.Fill, this, fill, this.toString()+","+fill.toString());
+        return new FillExecutionReport(this, fill, this.toString()+","+fill.toString());
     }
 
     public Status getStatus() {
         return status;
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    public String getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
-    }
-
     public BuySell getSide() {
         return side;
     }
 
-    public void setSide(BuySell side) {
-        this.side = side;
-    }
-
     @Override
     public String toString() {
-        //ToDo better model the print message
-        if(status==Status.Ack||status==Status.Reject) {
-            return
-                    status +
-                            "," + orderId +
-                            "," + symbol +
-                            "," + printPrice()
-                             +
-                            "," + side +
-                            "," + qty
-                    ;
-        }
-
         return
                 status +
                         "," + orderId +
@@ -146,16 +96,8 @@ public class Order implements Comparable<Order>{
         return seq;
     }
 
-    public void setSeq(int seq) {
-        this.seq = seq;
-    }
-
     public int getUnFilledQty() {
         return unFilledQty;
-    }
-
-    public void setUnFilledQty(int unFilledQty) {
-        this.unFilledQty = unFilledQty;
     }
 
     public boolean isFullyFilled() {

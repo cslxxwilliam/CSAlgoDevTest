@@ -2,8 +2,8 @@ package model;
 
 public class HeaderExecutionReport implements ExecutionReportable {
     public static final int HEADER_REPORT_PRIORITY = 0;
-    private String report;
-    private boolean isFatal;
+    private final String report;
+    private final boolean isFatal;
 
     public HeaderExecutionReport(boolean isFatal, String report) {
         this.isFatal = isFatal;

@@ -2,17 +2,24 @@ package model;
 
 public class FillExecutionReport implements ExecutionReportable {
     public static final int FILL_REPORT_PRIORITY = 3;
-    private ReportType type;
-    private Order order;
-    private Fill fill;
-    private String report;
+    private final Order order;
+    private final Fill fill;
+    private final String report;
 
-    public FillExecutionReport(ReportType type, Order order, Fill fill, String report) {
+    public FillExecutionReport(Order order, Fill fill, String report) {
         this.fill = fill;
-        this.type = type;
         this.order = order;
         this.report = report;
     }
+
+    public Order getOrder() {
+        return order;
+    }
+
+    public Fill getFill() {
+        return this.fill;
+    }
+
 
     @Override
     public String getReport() {
@@ -38,25 +45,4 @@ public class FillExecutionReport implements ExecutionReportable {
 
         return this.getPriority()-o.getPriority();
     }
-
-    public void setType(ReportType type) {
-        this.type = type;
-    }
-
-    public Order getOrder() {
-        return order;
-    }
-
-    public void setOrder(Order order) {
-        this.order = order;
-    }
-
-    public void setReport(String report) {
-        this.report = report;
-    }
-
-    public Fill getFill() {
-        return this.fill;
-    }
-
 }
