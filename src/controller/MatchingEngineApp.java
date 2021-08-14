@@ -5,12 +5,10 @@ import model.Order;
 import validator.HeaderValidator;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class MatchingEngineApp {
     public MatchingEngine engine;
-    public static int seq = 0;
 
     public MatchingEngineApp() {
         engine = new MatchingEngine();
@@ -44,7 +42,7 @@ public class MatchingEngineApp {
     }
 
     private String printReport(List<ExecutionReport> executionReports) {
-        executionReports.sort(reportComparator);
+        executionReports.sort(ExecutionReport.reportComparator);
 
         String output = "";
         for (ExecutionReport report : executionReports) {
@@ -53,22 +51,4 @@ public class MatchingEngineApp {
         return output;
     }
 
-    //refator for a better comparator
-    public static Comparator<ExecutionReport> reportComparator = (r1, r2) -> {
-        //price larger, the less
-        if (r1.getType().compareTo(r2.getType()) == 0) {
-            if (r1.getFill() == null || r2.getFill() == null) {
-                return r1.getOrder().getSeq() - r2.getOrder().getSeq();
-            }
-
-            if (r1.getFill().getSeq() == r2.getFill().getSeq()) {
-                return r1.getOrder().getSeq() - r2.getOrder().getSeq();
-            }
-            return r1.getFill().getSeq() - r2.getFill().getSeq();
-        }
-        //market order less than limit
-        else {
-            return r1.getType().compareTo(r2.getType());
-        }
-    };
 }

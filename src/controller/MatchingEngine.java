@@ -56,28 +56,6 @@ public class MatchingEngine {
         return executionReports;
     }
 
-    public static Comparator<Order> buyOrderComparator = (c1, c2) -> {
-        //price larger, the less
-        if (c1.getOrderType().compareTo(c2.getOrderType()) == 0) {
-            return (int) -(c1.getPrice() - c2.getPrice());
-        }
-        //market order less than limit
-        else {
-            return c1.getOrderType().compareTo(c2.getOrderType());
-        }
-    };
-
-    public static Comparator<Order> sellOrderComparator = (c1, c2) -> {
-        //price lower, the less
-        if (c1.getOrderType().compareTo(c2.getOrderType()) == 0) {
-            return (int) (c1.getPrice() - c2.getPrice());
-        }
-        //market order less than limit
-        else {
-            return c1.getOrderType().compareTo(c2.getOrderType());
-        }
-    };
-
 
     private List<ExecutionReport> match(PriorityQueue<Order> buyOrderBookPerSymbol, PriorityQueue<Order> sellOrderBookPerSymbol) {
         Order sell = sellOrderBookPerSymbol.poll();
@@ -205,9 +183,9 @@ public class MatchingEngine {
         PriorityQueue<Order> orderBookPerSymbol = orderBook.get(orderToAdd.getSymbol());
         if (orderBookPerSymbol == null) {
             if (orderToAdd.getSide().equals(Buy)) {
-                orderBookPerSymbol = new PriorityQueue<>(buyOrderComparator);
+                orderBookPerSymbol = new PriorityQueue<>(Order.buyOrderComparator);
             } else {
-                orderBookPerSymbol = new PriorityQueue<>(sellOrderComparator);
+                orderBookPerSymbol = new PriorityQueue<>(Order.sellOrderComparator);
             }
 
             orderBookPerSymbol.add(orderToAdd);

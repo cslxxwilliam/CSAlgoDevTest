@@ -2,6 +2,7 @@ package model;
 
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class Order {
@@ -160,4 +161,25 @@ public class Order {
     public boolean isFullyFilled() {
         return filledQty>=qty;
     }
+
+    public static Comparator<Order> buyOrderComparator = (c1, c2) -> {
+        //price larger, the less
+        if (c1.getOrderType().compareTo(c2.getOrderType()) == 0) {
+            return (int) -(c1.getPrice() - c2.getPrice());
+        }
+        //market order less than limit
+        else {
+            return c1.getOrderType().compareTo(c2.getOrderType());
+        }
+    };
+    public static Comparator<Order> sellOrderComparator = (c1, c2) -> {
+        //price lower, the less
+        if (c1.getOrderType().compareTo(c2.getOrderType()) == 0) {
+            return (int) (c1.getPrice() - c2.getPrice());
+        }
+        //market order less than limit
+        else {
+            return c1.getOrderType().compareTo(c2.getOrderType());
+        }
+    };
 }
