@@ -6,5 +6,7 @@ public interface ExecutionReportable extends Comparable<ExecutionReportable> {
 
     int getPriority();
 
+    boolean isFatal();
+
     int compareTo(ExecutionReportable o);
 }

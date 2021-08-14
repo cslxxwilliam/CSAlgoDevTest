@@ -38,7 +38,7 @@ public class MatchingEngine {
             }
 
         }
-        reports.add(new AckExecutionReport(order, order.toString() + "\n"));
+        reports.add(new AckExecutionReport(order, order.toString()));
 
         return reports;
     }

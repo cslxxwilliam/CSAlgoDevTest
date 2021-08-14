@@ -39,17 +39,13 @@ public class MatchingEngineApp {
     }
 
     private boolean isFatal(List<ExecutionReportable> headerValidation) {
-        return headerValidation.stream().allMatch(v ->v.getReport().equals("Invalid headers"));
+        return headerValidation.stream().allMatch(ExecutionReportable::isFatal);
     }
 
     private String printReport(List<ExecutionReportable> executionReports) {
         List<ExecutionReportable> sorted = executionReports.stream().sorted().collect(Collectors.toList());
 
-        String output = "";
-        for (ExecutionReportable report : sorted) {
-            output = output + report.getReport();
-        }
-        return output;
+        return sorted.stream().map(ExecutionReportable::getReport).collect(Collectors.joining("\n"));
     }
 
 }

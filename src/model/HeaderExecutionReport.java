@@ -3,8 +3,10 @@ package model;
 public class HeaderExecutionReport implements ExecutionReportable {
     public static final int HEADER_REPORT_PRIORITY = 0;
     private String report;
+    private boolean isFatal;
 
-    public HeaderExecutionReport(String report) {
+    public HeaderExecutionReport(boolean isFatal, String report) {
+        this.isFatal = isFatal;
         this.report = report;
     }
 
@@ -16,6 +18,11 @@ public class HeaderExecutionReport implements ExecutionReportable {
     @Override
     public int getPriority() {
         return HEADER_REPORT_PRIORITY;
+    }
+
+    @Override
+    public boolean isFatal() {
+        return this.isFatal;
     }
 
     @Override

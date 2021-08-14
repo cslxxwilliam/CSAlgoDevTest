@@ -29,7 +29,7 @@ public class allTest {
                 "Ack,Order2,0700.HK,610,Sell,10000\n" +
                 "Ack,Order3,0700.HK,610,Buy,10000\n" +
                 "Fill,Order1,0700.HK,610,Sell,20000,610,10000\n" +
-                "Fill,Order3,0700.HK,610,Buy,10000,610,10000\n", output);
+                "Fill,Order3,0700.HK,610,Buy,10000,610,10000", output);
     }
 
     @Test
@@ -45,7 +45,7 @@ public class allTest {
                 "Ack,Order2,0700.HK,MKT,Sell,10000\n" +
                 "Ack,Order3,0700.HK,610,Buy,10000\n" +
                 "Fill,Order2,0700.HK,MKT,Sell,10000,610,10000\n" +
-                "Fill,Order3,0700.HK,610,Buy,10000,610,10000\n", output);
+                "Fill,Order3,0700.HK,610,Buy,10000,610,10000", output);
     }
 
     @Test
@@ -57,7 +57,7 @@ public class allTest {
 
         assertEquals("#ActionType,OrderID,Symbol,Price,Side,OrderQuantity,FillPrice,FillQuantity\n" +
                 "Ack,Order1,0700.HK,610,Sell,10000\n" +
-                "Reject,Order2,0700.HK,610,Buy,10000000\n", output);
+                "Reject,Order2,0700.HK,610,Buy,10000000", output);
     }
 
     @Test
@@ -73,7 +73,7 @@ public class allTest {
                 "Ack,Order2,0005.HK,49.8,Sell,10000\n" +
                 "Ack,Order3,0005.HK,49.8,Buy,10000\n" +
                 "Fill,Order2,0005.HK,49.8,Sell,10000,49.8,10000\n" +
-                "Fill,Order3,0005.HK,49.8,Buy,10000,49.8,10000\n", output);
+                "Fill,Order3,0005.HK,49.8,Buy,10000,49.8,10000", output);
     }
 
     @Test
@@ -85,7 +85,7 @@ public class allTest {
 
         assertEquals("#ActionType,OrderID,Symbol,Price,Side,OrderQuantity,FillPrice,FillQuantity\n" +
                 "Ack,Order1,0700.HK,MKT,Sell,20000\n" +
-                "Ack,Order2,0700.HK,MKT,Buy,10000\n", output);
+                "Ack,Order2,0700.HK,MKT,Buy,10000", output);
     }
 
     @Test
@@ -101,7 +101,7 @@ public class allTest {
                 "Ack,Order2,0700.HK,MKT,Buy,10000\n" +
                 "Ack,Order3,0700.HK,610,Buy,10000\n" +
                 "Fill,Order1,0700.HK,MKT,Sell,10000,610,10000\n" +
-                "Fill,Order2,0700.HK,MKT,Buy,10000,610,10000\n", output);
+                "Fill,Order2,0700.HK,MKT,Buy,10000,610,10000", output);
     }
 
     @Test
@@ -119,7 +119,7 @@ public class allTest {
                 "Fill,Order1,0700.HK,MKT,Sell,20000,610,10000\n" +
                 "Fill,Order2,0700.HK,MKT,Buy,10000,610,10000\n" +
                 "Fill,Order1,0700.HK,MKT,Sell,20000,610,10000\n" +
-                "Fill,Order3,0700.HK,610,Buy,10000,610,10000\n", output);
+                "Fill,Order3,0700.HK,610,Buy,10000,610,10000", output);
     }
 
     //Same price, timestamp matters
@@ -136,7 +136,7 @@ public class allTest {
                 "Ack,Order2,0700.HK,600,Sell,10000\n" +
                 "Ack,Order3,0700.HK,610,Buy,10000\n" +
                 "Fill,Order2,0700.HK,600,Sell,10000,600,10000\n" +
-                "Fill,Order3,0700.HK,610,Buy,10000,600,10000\n", output);
+                "Fill,Order3,0700.HK,610,Buy,10000,600,10000", output);
     }
 
     @Test
@@ -152,7 +152,7 @@ public class allTest {
                 "Ack,Order2,0700.HK,610,Buy,10000\n" +
                 "Ack,Order3,0700.HK,600,Sell,10000\n" +
                 "Fill,Order2,0700.HK,610,Buy,10000,610,10000\n" +
-                "Fill,Order3,0700.HK,600,Sell,10000,610,10000\n", output);
+                "Fill,Order3,0700.HK,600,Sell,10000,610,10000", output);
     }
 
     //Match across multiple orders
@@ -171,7 +171,7 @@ public class allTest {
                 "Fill,Order1,0700.HK,600,Sell,20000,600,10000\n" +
                 "Fill,Order2,0700.HK,MKT,Buy,10000,600,10000\n" +
                 "Fill,Order1,0700.HK,600,Sell,20000,600,10000\n" +
-                "Fill,Order3,0700.HK,610,Buy,10000,600,10000\n", output);
+                "Fill,Order3,0700.HK,610,Buy,10000,600,10000", output);
     }
 
     @Test
@@ -189,6 +189,6 @@ public class allTest {
                 "Fill,Order1,0700.HK,600,Sell,20000,600,10000\n" +
                 "Fill,Order2,0700.HK,620,Buy,10000,600,10000\n" +
                 "Fill,Order1,0700.HK,600,Sell,20000,600,10000\n" +
-                "Fill,Order3,0700.HK,610,Buy,10000,600,10000\n", output);
+                "Fill,Order3,0700.HK,610,Buy,10000,600,10000", output);
     }
 }

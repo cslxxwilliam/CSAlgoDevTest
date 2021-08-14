@@ -26,6 +26,11 @@ public class AckExecutionReport implements ExecutionReportable {
     }
 
     @Override
+    public boolean isFatal() {
+        return false;
+    }
+
+    @Override
     public int compareTo(ExecutionReportable o) {
         if(o instanceof AckExecutionReport){
             return this.order.compareTo(((AckExecutionReport) o).getOrder());

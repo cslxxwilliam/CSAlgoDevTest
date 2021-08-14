@@ -25,6 +25,11 @@ public class FillExecutionReport implements ExecutionReportable {
     }
 
     @Override
+    public boolean isFatal() {
+        return false;
+    }
+
+    @Override
     public int compareTo(ExecutionReportable o) {
         if(o instanceof FillExecutionReport){
             int fillCompared = this.fill.compareTo(((FillExecutionReport) o).getFill());
