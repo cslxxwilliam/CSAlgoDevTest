@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class HeaderValidator {
+public class HeaderValidator implements Validator{
     public static List<ExecutionReport> validate(String headers) {
         List<ExecutionReport> reports = new ArrayList<>();
         if (!headers.equals("#OrderID,Symbol,Price,Side,OrderQuantity")) {
@@ -18,5 +18,10 @@ public class HeaderValidator {
         reports.add(new ExecutionReport(ReportType.Header, "#ActionType,OrderID,Symbol,Price,Side,OrderQuantity,FillPrice,FillQuantity\n"));
 
         return reports;
+    }
+
+    @Override
+    public String getType() {
+        return "Header";
     }
 }

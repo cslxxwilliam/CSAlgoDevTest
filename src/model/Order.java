@@ -26,7 +26,7 @@ public class Order {
         this.orderType = orderType;
     }
 
-    public Order(int seq, Status status, String orderId, String symbol, double price, BuySell side, int qty) {
+    public Order(int seq, Status status, String orderId, String symbol, OrderType orderType, double price, BuySell side, int qty) {
         this.seq = seq;
         this.status = status;
         this.orderId = orderId;
@@ -34,19 +34,7 @@ public class Order {
         this.symbol = symbol;
         this.price = price;
         this.qty = qty;
-        this.orderType = OrderType.LMT;
-        this.filledQty =0;
-        this.unFilledQty = qty;
-    }
-
-    public Order(int seq, Status status, String orderId, String symbol, OrderType orderType, BuySell side, int qty) {
-        this.seq = seq;
-        this.status = status;
-        this.orderId = orderId;
-        this.symbol = symbol;
         this.orderType = orderType;
-        this.side = side;
-        this.qty = qty;
         this.filledQty =0;
         this.unFilledQty = qty;
     }

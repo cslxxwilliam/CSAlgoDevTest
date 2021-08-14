@@ -2,6 +2,7 @@ package controller;
 
 import model.*;
 import validator.HeaderValidator;
+import validator.OrderValidator;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -33,22 +34,17 @@ public class MatchingEngineApp {
         if (!isFatal(headerValidation)) {
 
             //validate orders
+            Order order = null;
             for (int i = 1; i < split.length; i++) {
                 String[] orderDetails = split[i].split(",");
 
                 //ToDo convert to a factory with validation
-                Order order = null;
-                Status status = Status.Ack;
-                String orderId = orderDetails[0];
-                String symbol = orderDetails[1];
-                BuySell side = BuySell.valueOf(orderDetails[3]);
-                int qty = Integer.parseInt(orderDetails[4]);
-                if (qty >= 10000000) {
-                    status = Status.Reject;
-                    order = buildOrder(seq++, orderDetails, status, orderId, symbol, side, qty);
-                } else {
-                    order = buildOrder(seq++, orderDetails, status, orderId, symbol, side, qty);
-                }
+
+//                executionReports.addAll(OrderValidator.validate(qty));
+
+                order = OrderFactory.create(orderDetails[0], orderDetails[1], orderDetails[2], orderDetails[3], orderDetails[4]);
+
+//
                 orderList.add(order);
                 executionReports.add(new ExecutionReport(Ack, order, null, order.toString() + "\n"));
             }
@@ -74,16 +70,6 @@ public class MatchingEngineApp {
         return output;
     }
 
-    private Order buildOrder(int seq, String[] orderDetails, Status status, String orderId, String symbol, BuySell side, int qty) {
-        Order order;
-        if (orderDetails[2].equals("MKT")) {
-            order = new Order(seq, status, orderId, symbol, OrderType.MKT, side, qty);
-
-        } else {
-            order = new Order(seq, status, orderId, symbol, Double.parseDouble(orderDetails[2]), side, qty);
-        }
-        return order;
-    }
 
 
     //refator for a better comparator
