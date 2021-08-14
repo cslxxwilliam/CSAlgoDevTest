@@ -1,4 +1,4 @@
-# Exchange Order Matching Engine
+# Exchange Orders Matching Engine
 ## Description
 **Matching Engine** (<code>matchingEngine-1.0.jar</code>) is a Java application serving as financial exchange orders matching engine. The algorithm is based on the price/time priority.
 
