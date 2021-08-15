@@ -6,14 +6,24 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 
 @State(Scope.Benchmark)
-public class ExecutionPlan {
+public class ExecutionPlanSimple {
     public MatchingEngineApp app;
+    public String input;
 
     @Param({ "1000000" })
     public int iterations;
 
-    public ExecutionPlan() {
+    public ExecutionPlanSimple() {
+
         this.app = new MatchingEngineApp();
+        this.input = "#OrderID,Symbol,Price,Side,OrderQuantity\n";
+
+        for (int i=0;i<10000;i++){
+            input = input + "Order"+i+",0700.HK,610,Sell,1\n";
+        }
+
+        input = input + "Order1,0700.HK,610,Sell,10000\n";
     }
 
 }
+
