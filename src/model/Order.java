@@ -45,6 +45,28 @@ public class Order implements Comparable<Order> {
         return new FillExecutionReport(this, fill, this.toString() + "," + fill.toString());
     }
 
+    private static Comparator<Order> getOrderComparator(BuySell side) {
+        return (o1, o2) -> {
+            if (o1.getOrderType().compareTo(o2.getOrderType()) == 0) {
+                if (side.equals(Buy)){
+                    return (int) -(o1.getPrice() - o2.getPrice());
+                }else{
+                    return (int) (o1.getPrice() - o2.getPrice());
+                }
+            } else {
+                return o1.getOrderType().compareTo(o2.getOrderType());
+            }
+        };
+    }
+
+    private String printPrice() {
+        if (orderType.equals(OrderType.LMT)) {
+            return formatNum(price);
+        }
+
+        return orderType.toString();
+    }
+
     public OrderType getOrderType() {
         return orderType;
     }
@@ -65,28 +87,6 @@ public class Order implements Comparable<Order> {
         return side;
     }
 
-    private String printPrice() {
-        if (orderType.equals(OrderType.LMT)) {
-            return formatNum(price);
-        }
-
-        return orderType.toString();
-    }
-
-    private static Comparator<Order> getOrderComparator(BuySell side) {
-        return (o1, o2) -> {
-            if (o1.getOrderType().compareTo(o2.getOrderType()) == 0) {
-                if (side.equals(Buy)){
-                    return (int) -(o1.getPrice() - o2.getPrice());
-                }else{
-                    return (int) (o1.getPrice() - o2.getPrice());
-                }
-            } else {
-                return o1.getOrderType().compareTo(o2.getOrderType());
-            }
-        };
-    }
-
     public static Comparator<Order> buyOrderComparator = getOrderComparator(Buy);
 
     private String formatNum(double price) {
@@ -95,20 +95,6 @@ public class Order implements Comparable<Order> {
         else
             return String.format("%s", price);
     }
-
-    public int getSeq() {
-        return seq;
-    }
-
-    public int getUnFilledQty() {
-        return unFilledQty;
-    }
-
-    public boolean isFullyFilled() {
-        return filledQty >= qty;
-    }
-
-    public static Comparator<Order> sellOrderComparator = getOrderComparator(Sell);
 
     @Override
     public int compareTo(Order order) {
@@ -126,4 +112,18 @@ public class Order implements Comparable<Order> {
                         "," + qty
                 ;
     }
+
+    public int getSeq() {
+        return seq;
+    }
+
+    public int getUnFilledQty() {
+        return unFilledQty;
+    }
+
+    public boolean isFullyFilled() {
+        return filledQty >= qty;
+    }
+
+    public static Comparator<Order> sellOrderComparator = getOrderComparator(Sell);
 }
