@@ -3,7 +3,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class allTest {
+public class AllTest {
     private MatchingEngineApp app = new MatchingEngineApp();
 
     @Test
