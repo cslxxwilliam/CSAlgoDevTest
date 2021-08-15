@@ -9,7 +9,7 @@ public class EngineRunner {
     @Fork(value =1, jvmArgs = {"-Xms2G", "-Xmx2G"})
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
     @Warmup(iterations = 5)
-    @Measurement(iterations = 10)
+    @Measurement(iterations = 5)
     @BenchmarkMode(Mode.AverageTime)
     public void measure(ExecutionPlan plan){
         for(int i=0;i<plan.iterations;i++) {
