@@ -9,7 +9,7 @@ import org.openjdk.jmh.annotations.State;
 public class ExecutionPlan {
     public MatchingEngineApp app;
 
-    @Param({ "100", "10000", "1000000" })
+    @Param({ "1000000" })
     public int iterations;
 
     public ExecutionPlan() {
